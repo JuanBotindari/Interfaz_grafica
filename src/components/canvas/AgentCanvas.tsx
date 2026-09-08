@@ -54,10 +54,15 @@ export default function AgentCanvas() {
 
   const themeConfig = getThemeConfig(theme);
 
+  const [isMounted, setIsMounted] = useState(false);
   const [scale, setScale] = useState<number>(DISCRETE_ZOOM_LEVELS[0]);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [isSemanticZoomActive, setIsSemanticZoomActive] = useState(true);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Animación Suave de Zoom (Lerp + requestAnimationFrame)
   const targetScaleRef = useRef<number>(DISCRETE_ZOOM_LEVELS[0]);
@@ -503,6 +508,10 @@ export default function AgentCanvas() {
 
     animateZoom(newScale, { x: newPosX, y: newPosY });
   };
+
+  if (!isMounted) {
+    return <div style={{ width: "100%", height: "100%", backgroundColor: themeConfig.canvas.backgroundColor }} />;
+  }
 
   return (
     <div

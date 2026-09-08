@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { CustomNode, Connection, ConnectionType, HandlePosition } from "@/types";
-import { saveGraph } from "@/core/models/storage";
+import { saveGraph, loadGraph } from "@/utils/storage";
 
 export type GraphTheme = "neon" | "santander";
 
@@ -21,7 +21,9 @@ interface GraphState {
   isConnecting: boolean;
   isSimulating: boolean;
   editorMode: "view" | "edit";
+  currentFileHandle: FileSystemFileHandle | null;
 
+  // Historial
   past: HistorySnapshot[];
   future: HistorySnapshot[];
 
@@ -53,8 +55,6 @@ interface GraphState {
   // Auto-Layout
   runAutoLayout: () => void;
 
-  currentFileHandle: FileSystemFileHandle | null;
-
   // Exportación e Importación / Guardado Directo
   exportGraphToJson: () => void;
   importGraphFromJson: (jsonString: string, fileHandle?: FileSystemFileHandle | null) => boolean;
@@ -68,11 +68,12 @@ interface GraphState {
 }
 
 const MAX_HISTORY = 25;
+const initialGraphData = loadGraph();
 
 export const useGraphStore = create<GraphState>((set, get) => ({
-  theme: "santander",
-  nodes: [],        // Iniciamos con el lienzo vacío
-  connections: [],  // Sin conexiones iniciales
+  theme: (initialGraphData.theme as GraphTheme) || "santander",
+  nodes: initialGraphData.nodes || [],
+  connections: initialGraphData.connections || [],
   selectedNodeIds: [],
   selectedConnectionId: null,
   connectingSourceId: null,
