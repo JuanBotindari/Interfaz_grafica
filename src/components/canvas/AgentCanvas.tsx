@@ -60,14 +60,46 @@ export default function AgentCanvas() {
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [isSemanticZoomActive, setIsSemanticZoomActive] = useState(true);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   // Animación Suave de Zoom (Lerp + requestAnimationFrame)
   const targetScaleRef = useRef<number>(DISCRETE_ZOOM_LEVELS[0]);
   const targetPosRef = useRef({ x: 0, y: 0 });
   const rafId = useRef<number | null>(null);
+
+  const centerOnNodes = (s: number = targetScaleRef.current) => {
+    const currentNodes = useGraphStore.getState().nodes;
+    if (!currentNodes || currentNodes.length === 0) {
+      animateZoom(s, { x: 0, y: 0 });
+      return;
+    }
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    currentNodes.forEach((n) => {
+      if (n.x < minX) minX = n.x;
+      if (n.y < minY) minY = n.y;
+      if (n.x + 180 > maxX) maxX = n.x + 180;
+      if (n.y + 120 > maxY) maxY = n.y + 120;
+    });
+
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    const rect = canvasRef.current?.getBoundingClientRect();
+    const viewWidth = rect ? rect.width : (typeof window !== "undefined" ? window.innerWidth : 1200);
+    const viewHeight = rect ? rect.height : (typeof window !== "undefined" ? window.innerHeight : 800);
+
+    const targetX = viewWidth / 2 - centerX * s;
+    const targetY = viewHeight / 2 - centerY * s;
+
+    animateZoom(s, { x: targetX, y: targetY });
+  };
+
+  useEffect(() => {
+    setIsMounted(true);
+    const timer = setTimeout(() => {
+      centerOnNodes(DISCRETE_ZOOM_LEVELS[0]);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
 
   const getClosestZoomIndex = (currentScale: number): number => {
     let minDiff = Infinity;
@@ -571,7 +603,7 @@ export default function AgentCanvas() {
           const canvasY = (centerY - targetPosRef.current.y) / s;
           animateZoom(prev, { x: centerX - canvasX * prev, y: centerY - canvasY * prev });
         }}
-        onReset={() => animateZoom(DISCRETE_ZOOM_LEVELS[0], { x: 0, y: 0 })}
+        onReset={() => centerOnNodes(DISCRETE_ZOOM_LEVELS[0])}
       />
 
       <MiniMap scale={scale} position={position} onNavigate={(nx, ny) => setPosition({ x: nx, y: ny })} />
