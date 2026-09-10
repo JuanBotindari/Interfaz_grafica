@@ -5,18 +5,23 @@ import { CustomNode, Connection, HandlePosition, getNodeOpacity } from "@/types"
 import { getThemeConfig } from "@/config/themes";
 import { NODE_SIZES, MINIMIZED_SCALE } from "@/config/nodeConfig";
 
-const MINIMIZED_SIDE = Math.round(NODE_SIZES.AREA.width * MINIMIZED_SCALE);
+const MINIMIZED_AREA_SIDE = Math.round(NODE_SIZES.AREA.width * MINIMIZED_SCALE);
+const MINIMIZED_DEPARTMENT_SIDE = Math.round(NODE_SIZES.DEPARTMENT.width * MINIMIZED_SCALE);
 
 function getNodeDimensions(node: CustomNode, scale: number = 1) {
   const s = NODE_SIZES;
   switch (node.type as string) {
     case "HUB":
       return s.HUB;
+    case "DEPARTMENT":
+      return scale > 0.8
+        ? { width: MINIMIZED_DEPARTMENT_SIDE, height: MINIMIZED_DEPARTMENT_SIDE }
+        : s.DEPARTMENT;
     case "AREA":
     case "HUB2":
       // Above zoom 0.8 the node is rendered scaled down (CSS transform)
       return scale > 0.8
-        ? { width: MINIMIZED_SIDE, height: MINIMIZED_SIDE }
+        ? { width: MINIMIZED_AREA_SIDE, height: MINIMIZED_AREA_SIDE }
         : s.AREA;
     case "GROUP":
     case "PROCESS":
@@ -45,11 +50,19 @@ function getNodeDimensions(node: CustomNode, scale: number = 1) {
 }
 
 
+function getMinimizedCircleLayout(node: CustomNode, scale: number) {
+  const full = getNodeDimensions(node, 1);
+  const minimized = getNodeDimensions(node, scale);
+  const cx = node.x + full.width / 2;
+  const cy = node.y + full.height / 2;
+  const half = minimized.width / 2;
+  return { cx, cy, half };
+}
+
 function getNodeHandlePoint(node: CustomNode, handleSide: HandlePosition, scale: number = 1) {
-  if (((node.type as string) === "HUB2" || (node.type as string) === "AREA") && scale > 0.8) {
-    const cx = node.x + 150;
-    const cy = node.y + 150;
-    const half = 135 / 2; // 67.5px when scaled down to 45%
+  const type = node.type as string;
+  if ((type === "HUB2" || type === "AREA" || type === "DEPARTMENT") && scale > 0.8) {
+    const { cx, cy, half } = getMinimizedCircleLayout(node, scale);
     switch (handleSide) {
       case "top":
         return { x: cx, y: cy - half, side: "top" as HandlePosition };

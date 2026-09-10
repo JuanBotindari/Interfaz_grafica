@@ -21,6 +21,7 @@ import NodoNivel3 from "@/components/nodes/NodoNivel3";
 import NodoNivel4 from "@/components/nodes/NodoNivel4";
 import { CircleNodeView } from "@/components/nodes/CircleNodeView";
 import AreaNodeView from "@/components/nodes/AreaNodeView";
+import DepartmentNodeView from "@/components/nodes/DepartmentNodeView";
 import { TextCardView } from "@/components/nodes/TextCardView";
 import { GroupNodeView } from "@/components/nodes/GroupNodeView";
 import TaskNode from "@/components/nodes/TaskNode";
@@ -456,6 +457,9 @@ export default function AgentCanvas() {
         break;
       case "HUB":
         nodeEl = <CircleNodeView key={node.id} {...props} />;
+        break;
+      case "DEPARTMENT":
+        nodeEl = <DepartmentNodeView key={node.id} {...props} />;
         break;
       case "AREA":
         nodeEl = <AreaNodeView key={node.id} {...props} />;

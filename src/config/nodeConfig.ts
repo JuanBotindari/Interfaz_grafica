@@ -16,7 +16,7 @@
 //  1. NIVELES DE ZOOM  (factor de escala del canvas)
 // ─────────────────────────────────────────────
 export const ZOOM_LEVELS = {
-  /** Vista global: solo HUB + AREA visibles */
+  /** Vista global: HUB, DEPARTMENT y AREA visibles */
   L1: 0.30,
   /** Vista de áreas: HUB2, PROCESS, SUBPROCESS */
   L2: 1,
@@ -50,7 +50,7 @@ export const NODE_SIZES = {
 } as const;
 
 /**
- * Escala CSS aplicada a AREA y HUB2 cuando el zoom supera 0.8
+ * Escala CSS aplicada a DEPARTMENT, AREA y HUB2 cuando el zoom supera 0.8
  * (aparecen "miniaturizados" para dejar paso al nivel inferior).
  * Valor 1.0 = sin miniaturizar.
  */
@@ -85,7 +85,7 @@ export const NODE_TEXT = {
 //     Cuándo aparece / desaparece cada nodo según el zoom del canvas.
 //     Los valores coinciden con la lógica en src/types/index.ts
 //     ─────────────────────────────────────────
-//     Tier 1 (HUB, AREA)
+//     Tier 1 (HUB, DEPARTMENT, AREA)
 //       Visibles desde L1 hasta L2; se desvanecen entre 1.30 y 1.45
 //     Tier 2 (HUB2, PROCESS, SUBPROCESS, GROUP)
 //       HUB2:  aparece en L2 (fade-in 0.70→0.90), desaparece en L3

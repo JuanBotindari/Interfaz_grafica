@@ -2,7 +2,7 @@
 
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { Brain, Bot, Wrench, Cpu, Boxes, Network, Link2, Trash2, Plus, GripVertical, CheckSquare, Diamond, GitBranch, Database, Zap, FileStack, FolderTree } from "lucide-react";
+import { Brain, Bot, Wrench, Cpu, Boxes, Network, Link2, Trash2, Plus, GripVertical, CheckSquare, Diamond, GitBranch, Database, Zap, FileStack, FolderTree, Building2 } from "lucide-react";
 import { NodeType } from "@/types";
 
 interface NodeOption {
@@ -65,6 +65,14 @@ export default function Sidebar() {
       description: "Forma circular grande para núcleo de orquestación",
       icon: Brain,
       color: themeConfig.colors.primary,
+    },
+    {
+      type: "DEPARTMENT",
+      name: "Nuevo Departamento",
+      label: "Departamento",
+      description: "Nivel intermedio entre núcleo central y área de negocio",
+      icon: Building2,
+      color: isSantander ? "#C40000" : "#8b5cf6",
     },
     {
       type: "AREA",
