@@ -1,10 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: {
-      allowedOrigins: ['*'],
-    },
-  },
+  allowedDevOrigins: ['192.168.1.12', 'localhost:3000', '*.serveousercontent.com', 'serveo.net'],
   async headers() {
     return [
       {

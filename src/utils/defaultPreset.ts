@@ -1,5 +1,5 @@
 import { CustomNode, Connection } from "@/types";
-import defaultPresetJson from "../../public/presets/diagrama-general-seguros.json";
+import defaultPresetJson from "../../public/presets/santander-default.json";
 
 export const DEFAULT_MACRO_PRESET = {
   theme: (defaultPresetJson.theme || "santander") as "neon" | "santander",

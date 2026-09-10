@@ -2,6 +2,7 @@
 
 import { CustomNode } from "@/types";
 import { Wrench, Cpu } from "lucide-react";
+import NodeHandle from "./NodeHandle";
 
 interface NodeViewProps {
   node: CustomNode;
@@ -44,6 +45,10 @@ export function TextCardView({
         minWidth: "120px",
       }}
     >
+      <NodeHandle nodeId={node.id} position="top" />
+      <NodeHandle nodeId={node.id} position="bottom" />
+      <NodeHandle nodeId={node.id} position="left" />
+      <NodeHandle nodeId={node.id} position="right" />
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
         {isTool ? <Wrench size={12} color="#fca5a5" /> : <Cpu size={12} color="#94a3b8" />}
         <span style={{ fontSize: "10px", color: "#f4f4f5", fontWeight: "bold" }}>{node.name}</span>

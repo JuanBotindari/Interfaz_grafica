@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CustomNode } from "@/types";
+import NodeHandle from "./NodeHandle";
 
 interface NodeViewProps {
   node: CustomNode;
@@ -44,6 +45,10 @@ export default function NodoNivel3({
         transform: isSelected ? "scale(1.15)" : "scale(1)",
       }}
     >
+      <NodeHandle nodeId={node.id} position="top" />
+      <NodeHandle nodeId={node.id} position="bottom" />
+      <NodeHandle nodeId={node.id} position="left" />
+      <NodeHandle nodeId={node.id} position="right" />
       <div
         style={{
           width: "28px",

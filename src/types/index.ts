@@ -1,4 +1,4 @@
-export type NodeType = "HUB" | "HUB2" | "PROCESS" | "SUBPROCESS" | "GROUP" | "AGENT" | "TOOL" | "WORKER" | "TASK" | "DECISION" | "KNOWLEDGE_BASE" | "ACTION" | "RESOURCE";
+export type NodeType = "HUB" | "DEPARTMENT" | "AREA" | "HUB2" | "PROCESS" | "SUBPROCESS" | "GROUP" | "AGENT" | "TOOL" | "WORKER" | "TASK" | "DECISION" | "KNOWLEDGE_BASE" | "ACTION" | "RESOURCE";
 
 export type AIModel = "GPT-4o" | "Claude 3.5 Sonnet" | "Local Ollama";
 
@@ -45,7 +45,9 @@ export type SemanticTier = 1 | 2 | 3;
 
 export const NODE_TIERS: Record<NodeType, SemanticTier> = {
   HUB: 1,
-  HUB2: 1,
+  DEPARTMENT: 1,
+  AREA: 1,
+  HUB2: 2,
   PROCESS: 2,
   GROUP: 2,
   SUBPROCESS: 2,
@@ -59,46 +61,53 @@ export const NODE_TIERS: Record<NodeType, SemanticTier> = {
   WORKER: 3,
 };
 
-export const DISCRETE_ZOOM_LEVELS = [0.5, 1.125, 1.5, 1.875] as const;
+// Importar tanto ZOOM_FADE como ZOOM_LEVELS
+import { ZOOM_FADE, ZOOM_LEVELS } from "@/config/nodeConfig";
+
+// ✅ CORRECCIÓN 1: Ahora los saltos de zoom leen directamente de nodeConfig.ts
+export const DISCRETE_ZOOM_LEVELS = [
+  ZOOM_LEVELS.L1,
+  ZOOM_LEVELS.L2,
+  ZOOM_LEVELS.L3,
+  ZOOM_LEVELS.L4,
+] as const;
 
 /**
- * Calcula la opacidad limpia (0.0 a 1.0) para cada nodo según los 4 niveles de zoom discretos:
- * - 50%: Nivel 1 (HUB / HUB2 - Orquestador y Áreas Principales)
- * - 112.5%: Nivel 2 (SUBPROCESS / GROUP - Áreas y Subprocesos de Negocio)
- * - 150%: Nivel 3 (TASK, AGENT, DECISION, etc. - Tareas y Operatividad)
- * - 187.5%: Nivel 4 Ampliado (Detalle de Ejecución)
+ * Calcula la opacidad limpia (0.0 a 1.0) para cada nodo según los 4 niveles de zoom discretos.
  */
 export function getNodeOpacity(nodeType: NodeType, scale: number, isSemanticZoomActive: boolean = true): number {
   if (!isSemanticZoomActive) return 1;
 
   const tier = NODE_TIERS[nodeType] || 3;
+  const f = ZOOM_FADE;
 
-  // HUB (Nodo Central): Visible en Zoom 1 (50%), Oculto en Zoom 2+
-  if (nodeType === "HUB") {
-    if (scale <= 0.6) return 1.0;
-    if (scale <= 0.9) return 1.0 - (scale - 0.6) / (0.9 - 0.6);
+  // HUB, DEPARTMENT y AREA (Nivel 1): visibles en Zoom 1 y Zoom 2, ocultos en Zoom 3+
+  if (nodeType === "HUB" || nodeType === "DEPARTMENT" || nodeType === "AREA") {
+    if (scale <= f.TIER1_FADE_OUT_START) return 1.0;
+    if (scale <= f.TIER1_FADE_OUT_END)
+      return 1.0 - (scale - f.TIER1_FADE_OUT_START) / (f.TIER1_FADE_OUT_END - f.TIER1_FADE_OUT_START);
     return 0;
   }
 
-  // HUB2 (Sub área): Visible en Zoom 1 (50%) Y en Zoom 2 (112.5%), Oculto en Zoom 3+
+  // HUB2 (Sub área): oculto en Zoom 1, visible en Zoom 2, marco en Zoom 3+
   if (nodeType === "HUB2") {
-    if (scale <= 1.3) return 1.0;
-    if (scale <= 1.45) return 1.0 - (scale - 1.3) / (1.45 - 1.3);
-    return 0;
+    if (scale <= f.HUB2_FADE_IN_START) return 0;
+    if (scale <= f.TIER2_FULL_BELOW) return 1.0;
+    if (scale <= f.TIER2_FRAME_BELOW) return 0.35;
+    return 0.1;
   }
 
-  // Tier 2 (PROCESS, SUBPROCESS, GROUP): Estructura
-  // Zoom 1 (0.5): 70% (Resumen) | Zoom 2 (1.125): 100% (Principal) | Zoom 3 (1.5): Marco Contenedor | Zoom 4 (1.875): Transparente (Solo área)
+  // Tier 2 (PROCESS, SUBPROCESS, GROUP): estructura de proceso
   if (tier === 2) {
-    if (scale <= 0.7) return 0; // Zoom 1 (50%): 0% Oculto (El usuario especificó que Proceso no debe aparecer)
-    if (scale <= 1.3) return 1.0; // Zoom 2 (112.5%): 100% Principal
-    if (scale <= 1.65) return 0.35; // Zoom 3 (150%): Marco Contenedor (Borde/Agrupador)
-    return 0.1; // Zoom 4 (187.5%): Transparente / Solo área
+    if (scale <= f.TIER2_HIDDEN_BELOW) return 0;
+    if (scale <= f.TIER2_FULL_BELOW) return 1.0;
+    if (scale <= f.TIER2_FRAME_BELOW) return 0.35;
+    return 0.1;
   }
 
-  // Tier 3 (TASK, AGENT, DECISION, KNOWLEDGE_BASE, ACTION, RESOURCE, TOOL, WORKER): Operativo
-  // Zoom 1 (0.5): 0% (Oculto) | Zoom 2 (1.125): 70% (Preview) | Zoom 3 (1.5) & Zoom 4 (1.875): 100% (Principal / Detalle)
-  if (scale <= 0.7) return 0; // Zoom 1 (50%): 0% Oculto
-  if (scale <= 1.3) return 0.7; // Zoom 2 (112.5%): 70% Preview
-  return 1.0; // Zoom 3 (150%) & Zoom 4 (187.5%): 100% Principal / Expandido
+  // Tier 3 (TASK, AGENT, DECISION, …): operativo
+  if (scale <= f.TIER3_HIDDEN_BELOW) return 0;
+  // ✅ CORRECCIÓN 2: Se usa TIER3_PREVIEW_BELOW correctamente
+  if (scale <= f.TIER3_PREVIEW_BELOW) return 0.7;
+  return 1.0;
 }

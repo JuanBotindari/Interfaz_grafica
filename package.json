@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "tunnel": "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -R diagrama-santander-local:80:localhost:3000 serveo.net"
   },
   "dependencies": {
     "lucide-react": "^1.40.0",

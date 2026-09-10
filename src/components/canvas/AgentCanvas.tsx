@@ -20,6 +20,7 @@ import NodoNivel2 from "@/components/nodes/NodoNivel2";
 import NodoNivel3 from "@/components/nodes/NodoNivel3";
 import NodoNivel4 from "@/components/nodes/NodoNivel4";
 import { CircleNodeView } from "@/components/nodes/CircleNodeView";
+import AreaNodeView from "@/components/nodes/AreaNodeView";
 import { TextCardView } from "@/components/nodes/TextCardView";
 import { GroupNodeView } from "@/components/nodes/GroupNodeView";
 import TaskNode from "@/components/nodes/TaskNode";
@@ -456,6 +457,9 @@ export default function AgentCanvas() {
       case "HUB":
         nodeEl = <CircleNodeView key={node.id} {...props} />;
         break;
+      case "AREA":
+        nodeEl = <AreaNodeView key={node.id} {...props} />;
+        break;
       case "HUB2":
         nodeEl = <NodoNivel2 key={node.id} {...props} />;
         break;
@@ -647,7 +651,7 @@ export default function AgentCanvas() {
                 width: `${Math.abs(marqueeEnd.x - marqueeStart.x)}px`,
                 height: `${Math.abs(marqueeEnd.y - marqueeStart.y)}px`,
                 backgroundColor: themeConfig.canvas.marqueeBg,
-                border: `1px stroke ${themeConfig.canvas.marqueeBorder}`,
+                border: `1px dashed ${themeConfig.canvas.marqueeBorder}`,
                 borderRadius: "4px",
                 pointerEvents: "none",
                 zIndex: 35,

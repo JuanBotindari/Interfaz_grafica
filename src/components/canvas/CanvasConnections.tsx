@@ -3,41 +3,50 @@
 import { useGraphStore } from "@/store/useGraphStore";
 import { CustomNode, Connection, HandlePosition, getNodeOpacity } from "@/types";
 import { getThemeConfig } from "@/config/themes";
+import { NODE_SIZES, MINIMIZED_SCALE } from "@/config/nodeConfig";
+
+const MINIMIZED_SIDE = Math.round(NODE_SIZES.AREA.width * MINIMIZED_SCALE);
 
 function getNodeDimensions(node: CustomNode, scale: number = 1) {
+  const s = NODE_SIZES;
   switch (node.type as string) {
     case "HUB":
-      return { width: 380, height: 380 };
+      return s.HUB;
+    case "AREA":
     case "HUB2":
-      return scale > 0.8 ? { width: 135, height: 135 } : { width: 300, height: 300 };
+      // Above zoom 0.8 the node is rendered scaled down (CSS transform)
+      return scale > 0.8
+        ? { width: MINIMIZED_SIDE, height: MINIMIZED_SIDE }
+        : s.AREA;
     case "GROUP":
     case "PROCESS":
-      return { width: node.width || 480, height: node.height || 320 };
+      return { width: node.width || s.PROCESS.width, height: node.height || s.PROCESS.height };
     case "SUBPROCESS":
-      return { width: 150, height: 60 };
+      return s.SUBPROCESS;
     case "AGENT":
-      return { width: 180, height: 90 };
+      return s.AGENT;
     case "KNOWLEDGE_BASE":
-      return { width: node.width || 180, height: 90 };
+      return { width: node.width || s.KNOWLEDGE_BASE.width, height: s.KNOWLEDGE_BASE.height };
     case "TASK":
-      return { width: 160, height: 70 };
+      return s.TASK;
     case "DECISION":
-      return { width: 90, height: 90 };
+      return s.DECISION;
     case "ACTION":
-      return { width: 140, height: 40 };
+      return s.ACTION;
     case "RESOURCE":
-      return { width: 90, height: 65 };
+      return s.RESOURCE;
     case "TOOL":
-      return { width: 65, height: 50 };
+      return s.TOOL;
     case "WORKER":
-      return { width: 130, height: 42 };
+      return s.WORKER;
     default:
-      return { width: 160, height: 70 };
+      return s.TASK;
   }
 }
 
+
 function getNodeHandlePoint(node: CustomNode, handleSide: HandlePosition, scale: number = 1) {
-  if ((node.type as string) === "HUB2" && scale > 0.8) {
+  if (((node.type as string) === "HUB2" || (node.type as string) === "AREA") && scale > 0.8) {
     const cx = node.x + 150;
     const cy = node.y + 150;
     const half = 135 / 2; // 67.5px when scaled down to 45%

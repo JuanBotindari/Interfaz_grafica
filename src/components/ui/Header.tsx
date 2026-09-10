@@ -8,7 +8,7 @@ export function Header() {
       <div className="flex items-center gap-3">
         <Cpu className="size-4 text-cyan-400 animate-pulse" />
         <span className="font-bold tracking-widest text-zinc-100 font-mono">
-          BENNETT OS // COMMAND CENTER
+          JUAN BOTINDARI // COMMAND CENTER
         </span>
       </div>
 

@@ -111,6 +111,7 @@ export default function NodeInspector() {
             style={selectStyle}
           >
             <option value="HUB">Nodo Central (HUB)</option>
+            <option value="AREA">Área Principal (AREA)</option>
             <option value="HUB2">Sub área (HUB2)</option>
             <option value="PROCESS">Proceso</option>
             <option value="SUBPROCESS">Sub-proceso</option>

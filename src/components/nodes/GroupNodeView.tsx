@@ -2,6 +2,7 @@
 
 import { CustomNode } from "@/types";
 import { Layers } from "lucide-react";
+import NodeHandle from "./NodeHandle";
 
 interface GroupNodeViewProps {
   node: CustomNode;
@@ -40,6 +41,11 @@ export function GroupNodeView({
         transition: "border 0.2s, box-shadow 0.2s",
       }}
     >
+      <NodeHandle nodeId={node.id} position="top" />
+      <NodeHandle nodeId={node.id} position="bottom" />
+      <NodeHandle nodeId={node.id} position="left" />
+      <NodeHandle nodeId={node.id} position="right" />
+
       <div
         style={{
           display: "flex",

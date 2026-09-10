@@ -2,6 +2,7 @@
 
 import { CustomNode } from "@/types";
 import { Cpu } from "lucide-react";
+import NodeHandle from "./NodeHandle";
 
 interface NodeViewProps {
   node: CustomNode;
@@ -44,6 +45,10 @@ export default function NodoNivel4({
         animation: "fadeIn 0.25s ease-out",
       }}
     >
+      <NodeHandle nodeId={node.id} position="top" />
+      <NodeHandle nodeId={node.id} position="bottom" />
+      <NodeHandle nodeId={node.id} position="left" />
+      <NodeHandle nodeId={node.id} position="right" />
       <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
         <Cpu size={10} color="#22d3ee" />
         <span style={{ fontSize: "8px", color: "#e0f2fe", fontWeight: "bold" }}>{node.name}</span>

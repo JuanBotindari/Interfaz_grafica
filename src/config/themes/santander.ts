@@ -13,7 +13,7 @@ export const santanderTheme: ThemeConfig = {
     border: "rgba(236, 0, 0, 0.25)",
   },
   canvas: {
-    backgroundColor: "#F5F6F8",
+    backgroundColor: "#d1d1d4ff",
     backgroundImage: "radial-gradient(circle, rgba(236, 0, 0, 0.08) 1px, transparent 1px)",
     marqueeBg: "rgba(236, 0, 0, 0.08)",
     marqueeBorder: "#EC0000",

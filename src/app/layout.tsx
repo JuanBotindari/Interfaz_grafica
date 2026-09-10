@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "BENNETT OS // OPTIMAL ENGINE",
+  title: "JUAN BOTINDARI // OPTIMAL ENGINE",
   description: "AI Agent Command Center",
 };
 
