@@ -4,26 +4,27 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, NODE_TEXT, MINIMIZED_SCALE } from "@/config/nodeConfig";
+import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
 import { Map } from "lucide-react";
 
 interface Props {
   node: CustomNode;
   isSelected: boolean;
   zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
 
 /**
  * AreaNodeView — Nivel 1 del zoom semántico.
- * Representa un Área de negocio principal, visible en el zoom general (50% y 112.5%).
- * Visualmente es un círculo grande, más prominente que HUB2 (Sub área).
+ * Representa un Área de negocio principal, visible en el zoom general.
  */
 export default function AreaNodeView({
   node,
   isSelected,
   zoomScale = 1,
+  isSemanticZoomActive = true,
   onMouseDown,
   onContextMenu,
 }: Props) {
@@ -31,14 +32,13 @@ export default function AreaNodeView({
   const themeConfig = getThemeConfig(theme);
   const isSantander = theme === "santander";
 
-  // AREA usa los colores primarios del tema, más saturados que HUB2
+  // AREA usa los colores primarios del tema
   const accentColor = isSantander ? "#EC0000" : "#06b6d4";
   const accentBg = isSantander ? "rgba(236, 0, 0, 0.10)" : "rgba(6, 182, 212, 0.10)";
   const accentBorder = isSantander ? "rgba(236, 0, 0, 0.6)" : "rgba(6, 182, 212, 0.6)";
   const accentGlow = isSantander ? "rgba(236, 0, 0, 0.45)" : "rgba(6, 182, 212, 0.5)";
 
-  // El nodo se minimiza cuando el zoom > 0.8 (nivel 2+)
-  const isMinimized = zoomScale > 0.8;
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
   const width = NODE_SIZES.AREA.width;
   const height = NODE_SIZES.AREA.height;
   const fontSize = NODE_TEXT.AREA.title;
@@ -54,9 +54,8 @@ export default function AreaNodeView({
         top: `${node.y}px`,
         width: `${width}px`,
         height: `${height}px`,
-        transform: isMinimized ? `scale(${MINIMIZED_SCALE})` : "scale(1)",
+        transform: `scale(${scaleFactor})`,
         transformOrigin: "center center",
-        opacity: isMinimized ? 0.7 : 1,
         borderRadius: "50%",
         backgroundColor: themeConfig.nodes.bg,
         border: isSelected

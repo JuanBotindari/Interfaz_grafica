@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { CustomNode, ContextMenuState, NodeType, getNodeOpacity, NODE_TIERS, DISCRETE_ZOOM_LEVELS } from "@/types";
+import { getClickZoomForTier } from "@/config/nodeConfig";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
 
@@ -414,15 +415,7 @@ export default function AgentCanvas() {
     if (!canvasRef.current || editorMode !== "view") return;
 
     const tier = NODE_TIERS[node.type] || 3;
-    let targetScale = scale;
-
-    if (tier === 1) {
-      targetScale = 0.75;
-    } else if (tier === 2) {
-      targetScale = 1.0;
-    } else {
-      targetScale = 1.25;
-    }
+    const targetScale = getClickZoomForTier(tier);
 
     const rect = canvasRef.current.getBoundingClientRect();
     const centerX = rect.width / 2;
@@ -444,6 +437,7 @@ export default function AgentCanvas() {
       node,
       isSelected,
       zoomScale: scale,
+      isSemanticZoomActive,
       onMouseDown: (e: React.MouseEvent) => handleNodeMouseDown(e, node.id),
       onContextMenu: (e: React.MouseEvent) => handleContextMenu(e, node.id),
     };
@@ -502,6 +496,7 @@ export default function AgentCanvas() {
     return (
       <div
         key={node.id}
+        data-node-id={node.id}
         onClick={() => handleNodeClick(node)}
         style={{
           position: "absolute",
@@ -618,6 +613,8 @@ export default function AgentCanvas() {
 
       <div style={{ flex: 1, position: "relative", width: "100%", height: "100%" }}>
         <div
+          data-canvas-viewport="true"
+          data-canvas-scale={scale}
           style={{
             width: "100%",
             height: "100%",

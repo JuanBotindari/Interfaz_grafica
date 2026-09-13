@@ -1,93 +1,40 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useGraphStore } from "@/store/useGraphStore";
 import { CustomNode, Connection, HandlePosition, getNodeOpacity } from "@/types";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, MINIMIZED_SCALE } from "@/config/nodeConfig";
+import { getNodeConnectionPoint } from "@/config/nodeConfig";
 
-const MINIMIZED_AREA_SIDE = Math.round(NODE_SIZES.AREA.width * MINIMIZED_SCALE);
-const MINIMIZED_DEPARTMENT_SIDE = Math.round(NODE_SIZES.DEPARTMENT.width * MINIMIZED_SCALE);
-
-function getNodeDimensions(node: CustomNode, scale: number = 1) {
-  const s = NODE_SIZES;
-  switch (node.type as string) {
-    case "HUB":
-      return s.HUB;
-    case "DEPARTMENT":
-      return scale > 0.8
-        ? { width: MINIMIZED_DEPARTMENT_SIDE, height: MINIMIZED_DEPARTMENT_SIDE }
-        : s.DEPARTMENT;
-    case "AREA":
-    case "HUB2":
-      // Above zoom 0.8 the node is rendered scaled down (CSS transform)
-      return scale > 0.8
-        ? { width: MINIMIZED_AREA_SIDE, height: MINIMIZED_AREA_SIDE }
-        : s.AREA;
-    case "GROUP":
-    case "PROCESS":
-      return { width: node.width || s.PROCESS.width, height: node.height || s.PROCESS.height };
-    case "SUBPROCESS":
-      return s.SUBPROCESS;
-    case "AGENT":
-      return s.AGENT;
-    case "KNOWLEDGE_BASE":
-      return { width: node.width || s.KNOWLEDGE_BASE.width, height: s.KNOWLEDGE_BASE.height };
-    case "TASK":
-      return s.TASK;
-    case "DECISION":
-      return s.DECISION;
-    case "ACTION":
-      return s.ACTION;
-    case "RESOURCE":
-      return s.RESOURCE;
-    case "TOOL":
-      return s.TOOL;
-    case "WORKER":
-      return s.WORKER;
-    default:
-      return s.TASK;
-  }
+function getNodeHandlePointFallback(node: CustomNode, handleSide: HandlePosition, scale: number = 1) {
+  return getNodeConnectionPoint(node, handleSide, scale, true);
 }
 
+/**
+ * Mide la posición física real de un handle en el DOM mediante getBoundingClientRect
+ * y la proyecta a coordenadas del lienzo (1:1).
+ */
+function getDOMHandlePoint(
+  nodeId: string,
+  handleSide: HandlePosition,
+  scale: number = 1
+): { x: number; y: number; side: HandlePosition } | null {
+  if (typeof document === "undefined") return null;
 
-function getMinimizedCircleLayout(node: CustomNode, scale: number) {
-  const full = getNodeDimensions(node, 1);
-  const minimized = getNodeDimensions(node, scale);
-  const cx = node.x + full.width / 2;
-  const cy = node.y + full.height / 2;
-  const half = minimized.width / 2;
-  return { cx, cy, half };
-}
+  const canvasContainer = document.querySelector<HTMLElement>("[data-canvas-viewport]");
+  if (!canvasContainer) return null;
 
-function getNodeHandlePoint(node: CustomNode, handleSide: HandlePosition, scale: number = 1) {
-  const type = node.type as string;
-  if ((type === "HUB2" || type === "AREA" || type === "DEPARTMENT") && scale > 0.8) {
-    const { cx, cy, half } = getMinimizedCircleLayout(node, scale);
-    switch (handleSide) {
-      case "top":
-        return { x: cx, y: cy - half, side: "top" as HandlePosition };
-      case "bottom":
-        return { x: cx, y: cy + half, side: "bottom" as HandlePosition };
-      case "left":
-        return { x: cx - half, y: cy, side: "left" as HandlePosition };
-      case "right":
-        return { x: cx + half, y: cy, side: "right" as HandlePosition };
-    }
+  const containerRect = canvasContainer.getBoundingClientRect();
+  const handleEl = document.querySelector<HTMLElement>(`[data-handle-id="${nodeId}-${handleSide}"]`);
+
+  if (handleEl) {
+    const hRect = handleEl.getBoundingClientRect();
+    const cx = (hRect.left + hRect.width / 2 - containerRect.left) / scale;
+    const cy = (hRect.top + hRect.height / 2 - containerRect.top) / scale;
+    return { x: cx, y: cy, side: handleSide };
   }
 
-  const dim = getNodeDimensions(node, scale);
-  switch (handleSide) {
-    case "top":
-      return { x: node.x + dim.width / 2, y: node.y, side: "top" as HandlePosition };
-    case "bottom":
-      return { x: node.x + dim.width / 2, y: node.y + dim.height, side: "bottom" as HandlePosition };
-    case "left":
-      return { x: node.x, y: node.y + dim.height / 2, side: "left" as HandlePosition };
-    case "right":
-      return { x: node.x + dim.width, y: node.y + dim.height / 2, side: "right" as HandlePosition };
-    default:
-      return { x: node.x + dim.width / 2, y: node.y + dim.height / 2, side: "right" as HandlePosition };
-  }
+  return null;
 }
 
 function getBestConnectionPoints(
@@ -98,25 +45,26 @@ function getBestConnectionPoints(
   fixedTargetHandle?: HandlePosition
 ) {
   const sides: HandlePosition[] = ["top", "bottom", "left", "right"];
-  const allSourceHandles = sides.map((s) => getNodeHandlePoint(sourceNode, s, scale));
-  const allTargetHandles = sides.map((s) => getNodeHandlePoint(targetNode, s, scale));
 
-  const sourceHandles = fixedSourceHandle
-    ? allSourceHandles.filter((h) => h.side === fixedSourceHandle)
-    : allSourceHandles;
+  const getHandles = (node: CustomNode, fixed?: HandlePosition) => {
+    const availableSides = fixed ? [fixed] : sides;
+    return availableSides.map((s) => {
+      const domPt = getDOMHandlePoint(node.id, s, scale);
+      return domPt || getNodeHandlePointFallback(node, s, scale);
+    });
+  };
 
-  const targetHandles = fixedTargetHandle
-    ? allTargetHandles.filter((h) => h.side === fixedTargetHandle)
-    : allTargetHandles;
+  const sourceHandles = getHandles(sourceNode, fixedSourceHandle);
+  const targetHandles = getHandles(targetNode, fixedTargetHandle);
 
   let minDistance = Infinity;
   let bestPair = {
-    x1: (sourceHandles[0] || allSourceHandles[3]).x,
-    y1: (sourceHandles[0] || allSourceHandles[3]).y,
-    side1: (sourceHandles[0] || allSourceHandles[3]).side,
-    x2: (targetHandles[0] || allTargetHandles[2]).x,
-    y2: (targetHandles[0] || allTargetHandles[2]).y,
-    side2: (targetHandles[0] || allTargetHandles[2]).side,
+    x1: sourceHandles[0].x,
+    y1: sourceHandles[0].y,
+    side1: sourceHandles[0].side,
+    x2: targetHandles[0].x,
+    y2: targetHandles[0].y,
+    side2: targetHandles[0].side,
   };
 
   for (const h1 of sourceHandles) {
@@ -134,8 +82,10 @@ function getBestConnectionPoints(
 
 function getConnectionPoints(sourceNode: CustomNode, targetNode: CustomNode, connection: Connection, scale: number = 1) {
   if (connection.sourceHandle && connection.targetHandle) {
-    const sPt = getNodeHandlePoint(sourceNode, connection.sourceHandle, scale);
-    const tPt = getNodeHandlePoint(targetNode, connection.targetHandle, scale);
+    const sPt = getDOMHandlePoint(sourceNode.id, connection.sourceHandle, scale) ||
+                getNodeHandlePointFallback(sourceNode, connection.sourceHandle, scale);
+    const tPt = getDOMHandlePoint(targetNode.id, connection.targetHandle, scale) ||
+                getNodeHandlePointFallback(targetNode, connection.targetHandle, scale);
     return {
       x1: sPt.x,
       y1: sPt.y,
@@ -171,7 +121,6 @@ function createBezierPath(x1: number, y1: number, side1: string, x2: number, y2:
   return `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
 }
 
-
 interface CanvasConnectionsProps {
   nodes: CustomNode[];
   selectedNodeId: string | null;
@@ -187,9 +136,24 @@ export default function CanvasConnections({
 }: CanvasConnectionsProps) {
   const { connections, isSimulating, theme, selectConnection, selectedConnectionId, connectingSourceId, connectingSourceHandle, tempMousePos } = useGraphStore();
 
+  const [_, setTick] = useState(0);
+
+  // Detector ResizeObserver: observa cambios físicos en los nodos para recalcular la trayectoria en tiempo real
+  useEffect(() => {
+    if (typeof window === "undefined" || !("ResizeObserver" in window)) return;
+
+    const observer = new ResizeObserver(() => {
+      setTick((t) => t + 1);
+    });
+
+    const nodeElements = document.querySelectorAll("[data-node-id]");
+    nodeElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [nodes, scale]);
+
   const themeConfig = getThemeConfig(theme);
 
-  // Colores según el tema
   const dataColor = themeConfig.connections.data;
   const controlColor = themeConfig.connections.control;
 
@@ -264,12 +228,12 @@ export default function CanvasConnections({
       {/* Línea de conexión temporal al arrastrar el conector */}
       {connectingSourceNode && tempMousePos && (() => {
         const sourcePt = connectingSourceHandle
-          ? getNodeHandlePoint(connectingSourceNode, connectingSourceHandle, scale)
+          ? (getDOMHandlePoint(connectingSourceNode.id, connectingSourceHandle, scale) ||
+             getNodeHandlePointFallback(connectingSourceNode, connectingSourceHandle, scale))
           : null;
 
-        const sDim = getNodeDimensions(connectingSourceNode, scale);
-        const startX = sourcePt ? sourcePt.x : connectingSourceNode.x + sDim.width / 2;
-        const startY = sourcePt ? sourcePt.y : connectingSourceNode.y + sDim.height / 2;
+        const startX = sourcePt ? sourcePt.x : connectingSourceNode.x;
+        const startY = sourcePt ? sourcePt.y : connectingSourceNode.y;
         const startSide = sourcePt ? sourcePt.side : "right";
 
         const tempPath = createBezierPath(startX, startY, startSide, tempMousePos.x, tempMousePos.y, "left");

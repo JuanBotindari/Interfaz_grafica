@@ -4,23 +4,24 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, NODE_TEXT, MINIMIZED_SCALE } from "@/config/nodeConfig";
+import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
 import { Network } from "lucide-react";
 
 interface Props {
   node: CustomNode;
   isSelected: boolean;
   zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
 
-export default function NodoNivel2({ node, isSelected, zoomScale = 1, onMouseDown, onContextMenu }: Props) {
+export default function NodoNivel2({ node, isSelected, zoomScale = 1, isSemanticZoomActive = true, onMouseDown, onContextMenu }: Props) {
   const theme = useGraphStore((state) => state.theme);
   const themeConfig = getThemeConfig(theme);
   const isSantander = theme === "santander";
 
-  const isMinimized = zoomScale > 0.8;
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
   const width = NODE_SIZES.HUB2.width;
   const height = NODE_SIZES.HUB2.height;
   const fontSize = NODE_TEXT.HUB2.title;
@@ -42,9 +43,8 @@ export default function NodoNivel2({ node, isSelected, zoomScale = 1, onMouseDow
         top: `${node.y}px`,
         width: `${width}px`,
         height: `${height}px`,
-        transform: isMinimized ? `scale(${MINIMIZED_SCALE})` : "scale(1)",
+        transform: `scale(${scaleFactor})`,
         transformOrigin: "center center",
-        opacity: isMinimized ? 0.75 : 1,
         borderRadius: themeConfig.nodes.hubShape === "circle" ? "50%" : themeConfig.nodes.borderRadius,
         backgroundColor: themeConfig.nodes.bg,
         border: isSelected

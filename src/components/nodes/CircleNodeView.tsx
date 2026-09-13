@@ -5,19 +5,22 @@ import { Brain } from "lucide-react";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, NODE_TEXT } from "@/config/nodeConfig";
+import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
 
 interface Props {
   node: CustomNode;
   isSelected: boolean;
+  zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
 
-export function CircleNodeView({ node, isSelected, onMouseDown, onContextMenu }: Props) {
+export function CircleNodeView({ node, isSelected, zoomScale = 1, isSemanticZoomActive = true, onMouseDown, onContextMenu }: Props) {
   const theme = useGraphStore((state) => state.theme);
   const themeConfig = getThemeConfig(theme);
 
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
   const width = NODE_SIZES.HUB.width;
   const height = NODE_SIZES.HUB.height;
   const fontSize = NODE_TEXT.HUB.title;
@@ -33,6 +36,8 @@ export function CircleNodeView({ node, isSelected, onMouseDown, onContextMenu }:
         top: `${node.y}px`,
         width: `${width}px`,
         height: `${height}px`,
+        transform: `scale(${scaleFactor})`,
+        transformOrigin: "center center",
         borderRadius: themeConfig.nodes.hubShape === "circle" ? "50%" : themeConfig.nodes.borderRadius,
         backgroundColor: themeConfig.nodes.bg,
         border: isSelected

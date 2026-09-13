@@ -4,13 +4,14 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, NODE_TEXT, MINIMIZED_SCALE } from "@/config/nodeConfig";
+import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
 import { Building2 } from "lucide-react";
 
 interface Props {
   node: CustomNode;
   isSelected: boolean;
   zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
@@ -23,6 +24,7 @@ export default function DepartmentNodeView({
   node,
   isSelected,
   zoomScale = 1,
+  isSemanticZoomActive = true,
   onMouseDown,
   onContextMenu,
 }: Props) {
@@ -35,7 +37,7 @@ export default function DepartmentNodeView({
   const accentBorder = isSantander ? "rgba(196, 0, 0, 0.55)" : "rgba(139, 92, 246, 0.55)";
   const accentGlow = isSantander ? "rgba(196, 0, 0, 0.40)" : "rgba(139, 92, 246, 0.45)";
 
-  const isMinimized = zoomScale > 0.8;
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
   const width = NODE_SIZES.DEPARTMENT.width;
   const height = NODE_SIZES.DEPARTMENT.height;
   const fontSize = NODE_TEXT.DEPARTMENT.title;
@@ -51,9 +53,8 @@ export default function DepartmentNodeView({
         top: `${node.y}px`,
         width: `${width}px`,
         height: `${height}px`,
-        transform: isMinimized ? `scale(${MINIMIZED_SCALE})` : "scale(1)",
+        transform: `scale(${scaleFactor})`,
         transformOrigin: "center center",
-        opacity: isMinimized ? 0.75 : 1,
         borderRadius: "50%",
         backgroundColor: themeConfig.nodes.bg,
         border: isSelected
