@@ -3,9 +3,8 @@
 import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
-import { getThemeConfig } from "@/config/themes";
 import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
-import { Building2 } from "lucide-react";
+import { Building2, Sparkles } from "lucide-react";
 
 interface Props {
   node: CustomNode;
@@ -17,8 +16,7 @@ interface Props {
 }
 
 /**
- * DepartmentNodeView — entre Nodo Central (HUB) y Área (AREA) en la jerarquía visual.
- * Círculo intermedio, visible en zoom general junto con HUB y AREA.
+ * DepartmentNodeView — Carpeta contenedora ejecutiva con pestaña superior elegante.
  */
 export default function DepartmentNodeView({
   node,
@@ -29,18 +27,19 @@ export default function DepartmentNodeView({
   onContextMenu,
 }: Props) {
   const theme = useGraphStore((state) => state.theme);
-  const themeConfig = getThemeConfig(theme);
   const isSantander = theme === "santander";
-
-  const accentColor = isSantander ? "#C40000" : "#8b5cf6";
-  const accentBg = isSantander ? "rgba(196, 0, 0, 0.10)" : "rgba(139, 92, 246, 0.10)";
-  const accentBorder = isSantander ? "rgba(196, 0, 0, 0.55)" : "rgba(139, 92, 246, 0.55)";
-  const accentGlow = isSantander ? "rgba(196, 0, 0, 0.40)" : "rgba(139, 92, 246, 0.45)";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
   const width = NODE_SIZES.DEPARTMENT.width;
   const height = NODE_SIZES.DEPARTMENT.height;
   const fontSize = NODE_TEXT.DEPARTMENT.title;
+
+  const tabBg = isSantander ? "#EC0000" : "linear-gradient(135deg, #8B5CF6, #6366F1)";
+  const bodyBg = isSantander ? "#FFFFFF" : "#0F172A";
+  const borderColor = isSantander ? (isSelected ? "#EC0000" : "#E5E7EB") : (isSelected ? "#00F0FF" : "#334155");
+  const shadow = isSantander
+    ? (isSelected ? "0 8px 24px rgba(236,0,0,0.25)" : "0 4px 16px rgba(0,0,0,0.06)")
+    : (isSelected ? "0 0 20px rgba(0, 240, 255, 0.4)" : "0 4px 20px rgba(0,0,0,0.4)");
 
   return (
     <div
@@ -55,24 +54,12 @@ export default function DepartmentNodeView({
         height: `${height}px`,
         transform: `scale(${scaleFactor})`,
         transformOrigin: "center center",
-        borderRadius: "50%",
-        backgroundColor: themeConfig.nodes.bg,
-        border: isSelected
-          ? `4px solid ${accentColor}`
-          : `3px solid ${accentBorder}`,
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "12px",
-        boxShadow: isSelected
-          ? `0 0 24px ${accentGlow}, 0 0 50px ${accentBg}, inset 0 0 14px ${accentBg}`
-          : `0 5px 18px rgba(0, 0, 0, 0.4), inset 0 0 10px ${accentBg}`,
         cursor: "grab",
         userSelect: "none",
         zIndex: 10,
-        transition:
-          "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, box-shadow 0.2s ease, border 0.2s ease",
+        filter: isSelected ? `drop-shadow(0 0 8px ${isSantander ? "#EC0000" : "#00F0FF"})` : undefined,
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
@@ -80,34 +67,96 @@ export default function DepartmentNodeView({
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
 
+      {/* Pestaña de cabecera */}
       <div
         style={{
-          position: "absolute",
-          inset: "-6px",
-          borderRadius: "50%",
-          border: `1.5px solid ${accentBorder}`,
-          opacity: 0.3,
-          pointerEvents: "none",
-        }}
-      />
-
-      <Building2 size={48} color={accentColor} style={{ flexShrink: 0 }} />
-      <span
-        style={{
-          fontSize: `${fontSize}px`,
+          width: "200px",
+          height: "48px",
+          background: tabBg,
+          color: "#FFFFFF",
+          borderTopLeftRadius: "8px",
+          borderTopRightRadius: "8px",
+          padding: "0 10px",
+          fontSize: "20px",
           fontWeight: 800,
-          color: themeConfig.colors.textPrimary,
-          textAlign: "center",
-          padding: "0 18px",
-          lineHeight: 1.2,
-          overflow: "hidden",
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-        } as React.CSSProperties}
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          letterSpacing: "0.6px",
+          boxShadow: "0 -2px 6px rgba(0,0,0,0.05)",
+        }}
       >
-        {node.name}
-      </span>
+        <Building2 size={20} color="#FFFFFF" />
+        <span>DEPARTAMENTO</span>
+      </div>
+
+      {/* Cuerpo principal de la tarjeta */}
+      <div
+        style={{
+          flex: 1,
+          backgroundColor: bodyBg,
+          border: `2px solid ${borderColor}`,
+          borderBottomLeftRadius: "10px",
+          borderBottomRightRadius: "10px",
+          borderTopRightRadius: "10px",
+          boxShadow: shadow,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "center",
+          padding: "14px 18px",
+          gap: "6px",
+          position: "relative",
+          backdropFilter: isSantander ? "none" : "blur(8px)",
+        }}
+      >
+        {/* Decoración lateral de acento */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: "12px",
+            bottom: "12px",
+            width: "4px",
+            backgroundColor: isSantander ? "#EC0000" : "#00F0FF",
+            borderRadius: "0 4px 4px 0",
+          }}
+        />
+
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", paddingLeft: "6px" }}>
+          <span
+            style={{
+              fontSize: `${fontSize}px`,
+              fontWeight: 800,
+              color: isSantander ? "#111827" : "#F8FAFC",
+              lineHeight: 1.2,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "100%",
+            }}
+          >
+            {node.name}
+          </span>
+        </div>
+
+        {node.role && (
+          <span
+            style={{
+              fontSize: "10px",
+              fontWeight: 500,
+              color: isSantander ? "#6B7280" : "#94A3B8",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "100%",
+            }}
+          >
+            {node.role}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
+

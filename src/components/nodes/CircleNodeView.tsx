@@ -19,11 +19,17 @@ interface Props {
 export function CircleNodeView({ node, isSelected, zoomScale = 1, isSemanticZoomActive = true, onMouseDown, onContextMenu }: Props) {
   const theme = useGraphStore((state) => state.theme);
   const themeConfig = getThemeConfig(theme);
+  const isSantander = theme === "santander";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
   const width = NODE_SIZES.HUB.width;
   const height = NODE_SIZES.HUB.height;
   const fontSize = NODE_TEXT.HUB.title;
+
+  const outerBorderColor = isSantander ? "#EC0000" : "#FF007F";
+  const innerRingColor = isSantander ? "#F4F4F6" : "#00F0FF";
+  const bgColor = isSantander ? "#FFFFFF" : "#0A0F1D";
+  const glow = isSantander ? "0 4px 20px rgba(236,0,0,0.15)" : "0 0 12px #00F0FF";
 
   return (
     <div
@@ -38,17 +44,14 @@ export function CircleNodeView({ node, isSelected, zoomScale = 1, isSemanticZoom
         height: `${height}px`,
         transform: `scale(${scaleFactor})`,
         transformOrigin: "center center",
-        borderRadius: themeConfig.nodes.hubShape === "circle" ? "50%" : themeConfig.nodes.borderRadius,
-        backgroundColor: themeConfig.nodes.bg,
-        border: isSelected
-          ? `4px solid ${themeConfig.nodes.borderSelected.split(" ")[2] || "#00f0ff"}`
-          : `3px solid ${themeConfig.nodes.border.split(" ")[2] || "#333"}`,
+        borderRadius: "50%",
+        backgroundColor: innerRingColor,
+        border: `3px solid ${outerBorderColor}`,
+        padding: "3px",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: "14px",
-        boxShadow: isSelected ? themeConfig.nodes.boxShadowSelected : themeConfig.nodes.boxShadow,
+        boxShadow: isSelected ? `0 0 25px ${outerBorderColor}` : glow,
         cursor: "grab",
         userSelect: "none",
         zIndex: 10,
@@ -59,11 +62,28 @@ export function CircleNodeView({ node, isSelected, zoomScale = 1, isSemanticZoom
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
 
-      <Brain size={64} color={themeConfig.colors.primary} />
-      <span style={{ fontSize: `${fontSize}px`, fontWeight: 800, color: themeConfig.colors.textPrimary, textAlign: "center", padding: "0 24px", lineHeight: 1.2 }}>
-        {node.name}
-      </span>
-      <span style={{ fontSize: `${NODE_TEXT.HUB.subtitle}px`, fontWeight: 600, color: "#22c55e" }}>{node.status}</span>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          borderRadius: "50%",
+          backgroundColor: bgColor,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "14px",
+          padding: "16px",
+        }}
+      >
+        <Brain size={64} color={isSantander ? "#EC0000" : "#00F0FF"} />
+        <span style={{ fontSize: `${fontSize}px`, fontWeight: 800, color: isSantander ? "#1F2937" : "#FFFFFF", textAlign: "center", padding: "0 24px", lineHeight: 1.2 }}>
+          {node.name}
+        </span>
+        {node.status && (
+          <span style={{ fontSize: `${NODE_TEXT.HUB.subtitle}px`, fontWeight: 600, color: "#22c55e" }}>{node.status}</span>
+        )}
+      </div>
     </div>
   );
 }

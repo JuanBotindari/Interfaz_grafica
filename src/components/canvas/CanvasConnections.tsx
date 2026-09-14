@@ -1,40 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useGraphStore } from "@/store/useGraphStore";
 import { CustomNode, Connection, HandlePosition, getNodeOpacity } from "@/types";
 import { getThemeConfig } from "@/config/themes";
 import { getNodeConnectionPoint } from "@/config/nodeConfig";
 
-function getNodeHandlePointFallback(node: CustomNode, handleSide: HandlePosition, scale: number = 1) {
+function getNodeHandlePoint(node: CustomNode, handleSide: HandlePosition, scale: number = 1) {
   return getNodeConnectionPoint(node, handleSide, scale, true);
-}
-
-/**
- * Mide la posición física real de un handle en el DOM mediante getBoundingClientRect
- * y la proyecta a coordenadas del lienzo (1:1).
- */
-function getDOMHandlePoint(
-  nodeId: string,
-  handleSide: HandlePosition,
-  scale: number = 1
-): { x: number; y: number; side: HandlePosition } | null {
-  if (typeof document === "undefined") return null;
-
-  const canvasContainer = document.querySelector<HTMLElement>("[data-canvas-viewport]");
-  if (!canvasContainer) return null;
-
-  const containerRect = canvasContainer.getBoundingClientRect();
-  const handleEl = document.querySelector<HTMLElement>(`[data-handle-id="${nodeId}-${handleSide}"]`);
-
-  if (handleEl) {
-    const hRect = handleEl.getBoundingClientRect();
-    const cx = (hRect.left + hRect.width / 2 - containerRect.left) / scale;
-    const cy = (hRect.top + hRect.height / 2 - containerRect.top) / scale;
-    return { x: cx, y: cy, side: handleSide };
-  }
-
-  return null;
 }
 
 function getBestConnectionPoints(
@@ -46,16 +18,12 @@ function getBestConnectionPoints(
 ) {
   const sides: HandlePosition[] = ["top", "bottom", "left", "right"];
 
-  const getHandles = (node: CustomNode, fixed?: HandlePosition) => {
-    const availableSides = fixed ? [fixed] : sides;
-    return availableSides.map((s) => {
-      const domPt = getDOMHandlePoint(node.id, s, scale);
-      return domPt || getNodeHandlePointFallback(node, s, scale);
-    });
-  };
-
-  const sourceHandles = getHandles(sourceNode, fixedSourceHandle);
-  const targetHandles = getHandles(targetNode, fixedTargetHandle);
+  const sourceHandles = (fixedSourceHandle ? [fixedSourceHandle] : sides).map((s) =>
+    getNodeHandlePoint(sourceNode, s, scale)
+  );
+  const targetHandles = (fixedTargetHandle ? [fixedTargetHandle] : sides).map((s) =>
+    getNodeHandlePoint(targetNode, s, scale)
+  );
 
   let minDistance = Infinity;
   let bestPair = {
@@ -82,10 +50,8 @@ function getBestConnectionPoints(
 
 function getConnectionPoints(sourceNode: CustomNode, targetNode: CustomNode, connection: Connection, scale: number = 1) {
   if (connection.sourceHandle && connection.targetHandle) {
-    const sPt = getDOMHandlePoint(sourceNode.id, connection.sourceHandle, scale) ||
-                getNodeHandlePointFallback(sourceNode, connection.sourceHandle, scale);
-    const tPt = getDOMHandlePoint(targetNode.id, connection.targetHandle, scale) ||
-                getNodeHandlePointFallback(targetNode, connection.targetHandle, scale);
+    const sPt = getNodeHandlePoint(sourceNode, connection.sourceHandle, scale);
+    const tPt = getNodeHandlePoint(targetNode, connection.targetHandle, scale);
     return {
       x1: sPt.x,
       y1: sPt.y,
@@ -136,22 +102,6 @@ export default function CanvasConnections({
 }: CanvasConnectionsProps) {
   const { connections, isSimulating, theme, selectConnection, selectedConnectionId, connectingSourceId, connectingSourceHandle, tempMousePos } = useGraphStore();
 
-  const [_, setTick] = useState(0);
-
-  // Detector ResizeObserver: observa cambios físicos en los nodos para recalcular la trayectoria en tiempo real
-  useEffect(() => {
-    if (typeof window === "undefined" || !("ResizeObserver" in window)) return;
-
-    const observer = new ResizeObserver(() => {
-      setTick((t) => t + 1);
-    });
-
-    const nodeElements = document.querySelectorAll("[data-node-id]");
-    nodeElements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [nodes, scale]);
-
   const themeConfig = getThemeConfig(theme);
 
   const dataColor = themeConfig.connections.data;
@@ -196,7 +146,6 @@ export default function CanvasConnections({
               pointerEvents: lineOpacity > 0.3 ? "stroke" : "none",
               cursor: "pointer",
               opacity: lineOpacity,
-              transition: "opacity 0.35s ease",
             }}
             onClick={() => selectConnection(c.id)}
           >
@@ -228,8 +177,7 @@ export default function CanvasConnections({
       {/* Línea de conexión temporal al arrastrar el conector */}
       {connectingSourceNode && tempMousePos && (() => {
         const sourcePt = connectingSourceHandle
-          ? (getDOMHandlePoint(connectingSourceNode.id, connectingSourceHandle, scale) ||
-             getNodeHandlePointFallback(connectingSourceNode, connectingSourceHandle, scale))
+          ? getNodeHandlePoint(connectingSourceNode, connectingSourceHandle, scale)
           : null;
 
         const startX = sourcePt ? sourcePt.x : connectingSourceNode.x;

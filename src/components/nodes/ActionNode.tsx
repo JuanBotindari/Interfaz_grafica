@@ -4,19 +4,26 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
+import { NODE_SIZES, getNodeScaleForZoom } from "@/config/nodeConfig";
 import { Zap } from "lucide-react";
 
 interface Props {
   node: CustomNode;
   isSelected: boolean;
+  zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
 
-export default function ActionNode({ node, isSelected, onMouseDown, onContextMenu }: Props) {
+export default function ActionNode({ node, isSelected, zoomScale = 1, isSemanticZoomActive = true, onMouseDown, onContextMenu }: Props) {
   const theme = useGraphStore((s) => s.theme);
   const themeConfig = getThemeConfig(theme);
   const isSantander = theme === "santander";
+
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
+  const width = NODE_SIZES.ACTION.width;
+  const height = NODE_SIZES.ACTION.height;
 
   const accentColor = isSantander ? "#d97706" : "#fb923c";
   const accentBg = isSantander ? "rgba(217,119,6,0.12)" : "rgba(251,146,60,0.12)";
@@ -31,8 +38,10 @@ export default function ActionNode({ node, isSelected, onMouseDown, onContextMen
         position: "absolute",
         left: `${node.x}px`,
         top: `${node.y}px`,
-        width: "140px",
-        height: "40px",
+        width: `${width}px`,
+        height: `${height}px`,
+        transform: `scale(${scaleFactor})`,
+        transformOrigin: "center center",
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",

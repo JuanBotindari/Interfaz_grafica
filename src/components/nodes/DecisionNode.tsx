@@ -4,25 +4,28 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
+import { NODE_SIZES, getNodeScaleForZoom } from "@/config/nodeConfig";
 
 interface Props {
   node: CustomNode;
   isSelected: boolean;
+  zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
 
-export default function DecisionNode({ node, isSelected, onMouseDown, onContextMenu }: Props) {
+export default function DecisionNode({ node, isSelected, zoomScale = 1, isSemanticZoomActive = true, onMouseDown, onContextMenu }: Props) {
   const theme = useGraphStore((s) => s.theme);
   const themeConfig = getThemeConfig(theme);
   const isSantander = theme === "santander";
 
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
   const accentColor = isSantander ? "#f59e0b" : "#f59e0b";
   const accentBg = "rgba(245,158,11,0.12)";
   const accentBorder = isSelected ? "#f59e0b" : "rgba(245,158,11,0.5)";
 
-  // Diamond is 90x90, rotated 45°. Outer container is 90x90.
-  const size = 90;
+  const size = NODE_SIZES.DECISION.width;
 
   return (
     <div
@@ -35,6 +38,8 @@ export default function DecisionNode({ node, isSelected, onMouseDown, onContextM
         top: `${node.y}px`,
         width: `${size}px`,
         height: `${size}px`,
+        transform: `scale(${scaleFactor})`,
+        transformOrigin: "center center",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

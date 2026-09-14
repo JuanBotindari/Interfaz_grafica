@@ -88,7 +88,7 @@ export const ZOOM_LEVELS: Record<ZoomLevelKey, number> = {
   /** L1 — Organización: Santander + departamentos */
   L1: 0.2,
   /** L2 — Departamento: depto foco + áreas */
-  L2: 0.8,
+  L2: 0.6,
   /** L3 — Área: área foco + procesos / subnodos */
   L3: 1.5,
   /** L4 — Detalle: agentes, tareas, operativa */
@@ -135,6 +135,7 @@ export const NODE_TIERS: Record<NodeType, 1 | 2 | 3> = {
   RESOURCE      : 3,
   TOOL          : 3,
   WORKER        : 3,
+  NOTE          : 3,
 };
 
 /** Escala del canvas al hacer clic en un nodo (modo vista) según su tier */
@@ -149,21 +150,29 @@ export const CLICK_ZOOM = {
 //    GROUP / PROCESS usan node.width/height del JSON si existen.
 // ─────────────────────────────────────────────────────────────────────────────
 export const NODE_SIZES = {
-  HUB           : { width: 400, height: 400 },
-  DEPARTMENT    : { width: 350, height: 350 },
-  AREA          : { width: 320, height: 320 },
-  HUB2          : { width: 250, height: 250 },
-  GROUP         : { width: 280, height: 280 },
-  PROCESS       : { width: 280, height: 280 },
-  SUBPROCESS    : { width: 150, height:  60 },
+  HUB           : { width: 350, height: 350 },
+  DEPARTMENT    : { width: 400, height: 160 },
+  AREA          : { width: 288, height: 192 },
+  HUB2          : { width: 270, height: 250 },
+  GROUP         : { width: 240, height: 140 },
+  PROCESS       : { width: 290, height: 140 },
+  SUBPROCESS    : { width: 250, height:  64 },
   AGENT         : { width: 180, height:  90 },
   KNOWLEDGE_BASE: { width: 180, height:  90 },
-  TASK          : { width: 160, height:  70 },
+  TASK          : { width: 160, height:  56 },
   DECISION      : { width:  90, height:  90 },
   ACTION        : { width: 140, height:  40 },
-  RESOURCE      : { width:  90, height:  65 },
-  TOOL          : { width:  65, height:  50 },
-  WORKER        : { width: 130, height:  42 },
+  RESOURCE      : { width: 140, height:  70 },
+  TOOL          : { width: 140, height:  50 },
+  WORKER        : { width: 144, height:  48 },
+  NOTE          : { width: 160, height: 160 },
+} as const;
+
+export const NODE_CLIPS = {
+  OCTAGON: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+  HEXAGON: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
+  FOLDED_CORNER: "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)",
+  CHAMFERED: "polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px)",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -182,7 +191,7 @@ export const NODE_VISIBILITY: Record<NodeType, VisibilityMap> = {
   HUB2          : { L1: 0.0, L2: 0.85, L3: 1.0,  L4: 0.35 },
   PROCESS       : { L1: 0.0, L2: 0.8,  L3: 1.0,  L4: 0.35 },
   GROUP         : { L1: 0.0, L2: 0.8,  L3: 1.0,  L4: 0.35 },
-  SUBPROCESS    : { L1: 0.0, L2: 0.75, L3: 1.0,  L4: 0.35 },
+  SUBPROCESS    : { L1: 0.0, L2: 0.75, L3: 1.0,  L4: 0.50 },
 
   // ── Operativa (Tier 3) ──
   AGENT         : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
@@ -193,6 +202,7 @@ export const NODE_VISIBILITY: Record<NodeType, VisibilityMap> = {
   RESOURCE      : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
   TOOL          : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
   WORKER        : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
+  NOTE          : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
 };
 
 
@@ -219,7 +229,7 @@ export const NODE_SCALE: Record<NodeType, ScaleMap> = {
   HUB2:           { L1: 0.0,  L2: 0.75, L3: 0.9,  L4: 0.45 },
   PROCESS:        { L1: 0.0,  L2: 0.75, L3: 1.0,  L4: 0.5  },
   GROUP:          { L1: 0.0,  L2: 0.75, L3: 1.0,  L4: 0.5  },
-  SUBPROCESS:     { L1: 0.0,  L2: 0.7,  L3: 0.95, L4: 0.5  },
+  SUBPROCESS:     { L1: 0.0,  L2: 0.7,  L3: 0.95, L4: 0.6  },
 
   // ── Operativa (tamaño completo solo en L3–L4) ──
   AGENT:          { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
@@ -230,6 +240,7 @@ export const NODE_SCALE: Record<NodeType, ScaleMap> = {
   RESOURCE:       { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
   TOOL:           { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
   WORKER:         { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
+  NOTE:           { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
 };
 
 /**
@@ -242,13 +253,13 @@ export const MINIMIZED_SCALE = 0.45;
 // 7. TIPOGRAFÍA (font-size en px)
 // ─────────────────────────────────────────────────────────────────────────────
 export const NODE_TEXT = {
-  HUB           : { title: 40, subtitle: 16, meta: 14 },
-  DEPARTMENT    : { title: 35, subtitle: 15, meta: 13 },
+  HUB           : { title: 40, subtitle: 20, meta: 20 },
+  DEPARTMENT    : { title: 40, subtitle: 50, meta: 50 },
   AREA          : { title: 30, subtitle: 10, meta:  9 },
-  HUB2          : { title: 20, subtitle: 14, meta: 12 },
+  HUB2          : { title: 25, subtitle: 14, meta: 12 },
   GROUP         : { title: 13, subtitle: 11, meta: 10 },
   PROCESS       : { title: 13, subtitle: 11, meta: 10 },
-  SUBPROCESS    : { title: 11, subtitle:  9, meta:  8 },
+  SUBPROCESS    : { title: 18, subtitle:  9, meta:  8 },
   AGENT         : { title: 13, subtitle: 10, meta:  9 },
   KNOWLEDGE_BASE: { title: 12, subtitle: 10, meta:  9 },
   TASK          : { title: 12, subtitle: 10, meta:  9 },
@@ -257,6 +268,7 @@ export const NODE_TEXT = {
   RESOURCE      : { title: 10, subtitle:  8, meta:  8 },
   TOOL          : { title: 10, subtitle:  8, meta:  8 },
   WORKER        : { title:  8, subtitle:  7, meta:  7 },
+  NOTE          : { title: 11, subtitle:  9, meta:  8 },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -415,6 +427,8 @@ export function getBaseNodeDimensions(node: CustomNode): { width: number; height
       return s.AGENT;
     case "KNOWLEDGE_BASE":
       return { width: node.width || s.KNOWLEDGE_BASE.width, height: node.height || s.KNOWLEDGE_BASE.height };
+    case "NOTE":
+      return { width: node.width || s.NOTE.width, height: node.height || s.NOTE.height };
     case "TASK":
       return s.TASK;
     case "DECISION":

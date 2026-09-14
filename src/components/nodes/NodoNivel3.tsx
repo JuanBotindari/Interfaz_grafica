@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
+import { useGraphStore } from "@/store/useGraphStore";
+import { NODE_SIZES, NODE_TEXT, NODE_CLIPS, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { Wrench } from "lucide-react";
 
 interface NodeViewProps {
   node: CustomNode;
   isSelected: boolean;
-  zoomScale: number;
+  zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
@@ -15,63 +18,90 @@ interface NodeViewProps {
 export default function NodoNivel3({
   node,
   isSelected,
-  zoomScale,
+  zoomScale = 1,
+  isSemanticZoomActive = true,
   onMouseDown,
   onContextMenu,
 }: NodeViewProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const theme = useGraphStore((state) => state.theme);
+  const isSantander = theme === "santander";
+
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
+  const width = NODE_SIZES.TOOL.width; // 128
+  const height = NODE_SIZES.TOOL.height; // 40
+
+  const borderColor = isSantander ? "#374151" : "#00F0FF";
+  const bgColor = isSantander ? "#F3F4F6" : "#0A0F1D";
+  const textColor = isSantander ? "#1F2937" : "#FFFFFF";
+  const clipPath = NODE_CLIPS.CHAMFERED;
+  const dropFilter = isSantander ? "drop-shadow(0 2px 4px rgba(0,0,0,0.08))" : "drop-shadow(0 0 6px #00F0FF)";
 
   return (
     <div
       className="interactive-node"
       onMouseDown={onMouseDown}
       onContextMenu={onContextMenu}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
         position: "absolute",
         left: `${node.x}px`,
         top: `${node.y}px`,
-        width: "65px",
-        height: "50px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "2px",
+        width: `${width}px`,
+        height: `${height}px`,
+        transform: `scale(${scaleFactor})`,
+        transformOrigin: "center center",
+        filter: isSelected ? `drop-shadow(0 0 8px ${borderColor})` : dropFilter,
         cursor: "grab",
-        zIndex: isSelected ? 20 : 6,
-        transition: "transform 0.2s ease",
-        transform: isSelected ? "scale(1.15)" : "scale(1)",
+        userSelect: "none",
+        zIndex: 10,
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
       <NodeHandle nodeId={node.id} position="bottom" />
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
+
+      {/* Outer border container */}
       <div
         style={{
-          width: "28px",
-          height: "28px",
-          borderRadius: "50%",
-          border: `1px solid ${isSelected ? "#f87171" : "#ef4444"}`,
-          backgroundColor: "rgba(239, 68, 68, 0.15)",
+          width: "100%",
+          height: "100%",
+          clipPath,
+          backgroundColor: borderColor,
+          padding: "2px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "10px",
-          color: "#fca5a5",
-          fontWeight: "bold",
-          boxShadow: isSelected || isHovered ? "0 0 12px rgba(239, 68, 68, 0.8)" : "none",
-          transition: "all 0.2s",
         }}
       >
-        P
+        {/* Inner container */}
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            clipPath,
+            backgroundColor: bgColor,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px",
+            padding: "0 10px",
+          }}
+        >
+          <Wrench size={14} color={isSantander ? "#EC0000" : "#00F0FF"} style={{ flexShrink: 0 }} />
+          <span
+            style={{
+              fontSize: `${NODE_TEXT.TOOL.title}px`,
+              fontWeight: 700,
+              color: textColor,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {node.name}
+          </span>
+        </div>
       </div>
-
-      <span style={{ fontSize: "10px", color: isSelected || isHovered ? "#f4f4f5" : "#a1a1aa", userSelect: "none" }}>
-        {node.name}
-      </span>
     </div>
   );
 }

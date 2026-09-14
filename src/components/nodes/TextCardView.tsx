@@ -1,13 +1,16 @@
 "use client";
 
 import { CustomNode } from "@/types";
-import { Wrench, Cpu } from "lucide-react";
 import NodeHandle from "./NodeHandle";
+import { useGraphStore } from "@/store/useGraphStore";
+import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { StickyNote } from "lucide-react";
 
 interface NodeViewProps {
   node: CustomNode;
   isSelected: boolean;
-  zoomScale: number;
+  zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
@@ -15,13 +18,24 @@ interface NodeViewProps {
 export function TextCardView({
   node,
   isSelected,
-  zoomScale,
+  zoomScale = 1,
+  isSemanticZoomActive = true,
   onMouseDown,
   onContextMenu,
 }: NodeViewProps) {
-  if (zoomScale < 0.4) return null;
+  const theme = useGraphStore((s) => s.theme);
+  const isSantander = theme === "santander";
 
-  const isTool = node.type === "TOOL";
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
+  const width = NODE_SIZES.NOTE?.width || 144;
+  const height = NODE_SIZES.NOTE?.height || 144;
+
+  const bgColor = isSantander ? "#FEF9C3" : "#1E1B4B";
+  const borderColor = isSantander ? (isSelected ? "#EC0000" : "#FDE047") : "#00F0FF";
+  const textColor = isSantander ? "#713F12" : "#E0F2FE";
+  const shadow = isSantander
+    ? (isSelected ? "0 0 12px rgba(236,0,0,0.3)" : "0 4px 10px rgba(0,0,0,0.1)")
+    : "0 0 12px rgba(0,240,255,0.4)";
 
   return (
     <div
@@ -32,35 +46,70 @@ export function TextCardView({
         position: "absolute",
         left: `${node.x}px`,
         top: `${node.y}px`,
-        backgroundColor: "rgba(15, 23, 42, 0.9)",
-        border: `1px solid ${isSelected ? "#22d3ee" : isTool ? "rgba(239, 68, 68, 0.5)" : "rgba(148, 163, 184, 0.3)"}`,
-        padding: "6px 10px",
-        borderRadius: "6px",
+        width: `${width}px`,
+        height: `${height}px`,
+        transform: `scale(${scaleFactor})`,
+        transformOrigin: "center center",
+        backgroundColor: bgColor,
+        border: `1.5px solid ${borderColor}`,
+        borderRadius: "4px",
+        boxShadow: shadow,
+        cursor: "grab",
+        userSelect: "none",
+        zIndex: 8,
         display: "flex",
         flexDirection: "column",
-        gap: "4px",
-        cursor: "grab",
-        zIndex: isSelected ? 20 : 5,
-        boxShadow: isSelected ? "0 0 12px rgba(6, 182, 212, 0.4)" : "0 4px 12px rgba(0,0,0,0.5)",
-        minWidth: "120px",
+        padding: "10px",
+        gap: "6px",
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
       <NodeHandle nodeId={node.id} position="bottom" />
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
+
+      {/* Post-it folded corner visual strip */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          borderWidth: "0 14px 14px 0",
+          borderStyle: "solid",
+          borderColor: `${isSantander ? "#FDE047" : "#00F0FF"} transparent`,
+        }}
+      />
+
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-        {isTool ? <Wrench size={12} color="#fca5a5" /> : <Cpu size={12} color="#94a3b8" />}
-        <span style={{ fontSize: "10px", color: "#f4f4f5", fontWeight: "bold" }}>{node.name}</span>
+        <StickyNote size={14} color={isSantander ? "#713F12" : "#00F0FF"} />
+        <span
+          style={{
+            fontSize: `${NODE_TEXT.NOTE?.title || 11}px`,
+            fontWeight: 700,
+            color: textColor,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {node.name}
+        </span>
       </div>
 
-      <span style={{ fontSize: "8px", color: "#94a3b8" }}>{node.role}</span>
-
-      {zoomScale >= 0.9 && (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "2px" }}>
-          <span style={{ fontSize: "7px", color: "#22c55e" }}>{node.status}</span>
-          <span style={{ fontSize: "7px", color: "#06b6d4", fontFamily: "monospace" }}>{node.latency}</span>
-        </div>
+      {node.description && (
+        <span
+          style={{
+            fontSize: "10px",
+            color: isSantander ? "#A16207" : "#94A3B8",
+            lineHeight: 1.3,
+            overflow: "hidden",
+            display: "-webkit-box",
+            WebkitLineClamp: 4,
+            WebkitBoxOrient: "vertical",
+          } as React.CSSProperties}
+        >
+          {node.description}
+        </span>
       )}
     </div>
   );

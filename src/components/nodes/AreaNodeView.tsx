@@ -3,9 +3,8 @@
 import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
-import { getThemeConfig } from "@/config/themes";
 import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
-import { Map } from "lucide-react";
+import { Map, Sparkles } from "lucide-react";
 
 interface Props {
   node: CustomNode;
@@ -17,8 +16,7 @@ interface Props {
 }
 
 /**
- * AreaNodeView — Nivel 1 del zoom semántico.
- * Representa un Área de negocio principal, visible en el zoom general.
+ * AreaNodeView — Marco Punteado de Agrupación (Dashed Frame).
  */
 export default function AreaNodeView({
   node,
@@ -29,19 +27,21 @@ export default function AreaNodeView({
   onContextMenu,
 }: Props) {
   const theme = useGraphStore((state) => state.theme);
-  const themeConfig = getThemeConfig(theme);
   const isSantander = theme === "santander";
-
-  // AREA usa los colores primarios del tema
-  const accentColor = isSantander ? "#EC0000" : "#06b6d4";
-  const accentBg = isSantander ? "rgba(236, 0, 0, 0.10)" : "rgba(6, 182, 212, 0.10)";
-  const accentBorder = isSantander ? "rgba(236, 0, 0, 0.6)" : "rgba(6, 182, 212, 0.6)";
-  const accentGlow = isSantander ? "rgba(236, 0, 0, 0.45)" : "rgba(6, 182, 212, 0.5)";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
   const width = NODE_SIZES.AREA.width;
   const height = NODE_SIZES.AREA.height;
   const fontSize = NODE_TEXT.AREA.title;
+
+  const borderColor = isSantander ? "#EC0000" : "#00FF66";
+  const bgColor = isSantander ? "#FAFAFA" : "rgba(10, 15, 29, 0.4)";
+  const textColor = isSantander ? "#1F2937" : "#FFFFFF";
+  const shadow = isSantander
+    ? (isSelected ? "0 0 16px rgba(236,0,0,0.3)" : "none")
+    : (isSelected ? "0 0 20px rgba(0,255,102,0.4), inset 0 0 15px rgba(0, 255, 102, 0.2)" : "inset 0 0 15px rgba(0, 255, 102, 0.1)");
+
+  const tabBg = isSantander ? "#EC0000" : "linear-gradient(135deg, #00FF66, #00CC52)";
 
   return (
     <div
@@ -56,24 +56,11 @@ export default function AreaNodeView({
         height: `${height}px`,
         transform: `scale(${scaleFactor})`,
         transformOrigin: "center center",
-        borderRadius: "50%",
-        backgroundColor: themeConfig.nodes.bg,
-        border: isSelected
-          ? `4px solid ${accentColor}`
-          : `3px solid ${accentBorder}`,
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "14px",
-        boxShadow: isSelected
-          ? `0 0 28px ${accentGlow}, 0 0 60px ${accentBg}, inset 0 0 16px ${accentBg}`
-          : `0 6px 20px rgba(0, 0, 0, 0.4), inset 0 0 10px ${accentBg}`,
         cursor: "grab",
         userSelect: "none",
         zIndex: 11,
-        transition:
-          "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, box-shadow 0.2s ease, border 0.2s ease",
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
@@ -81,48 +68,65 @@ export default function AreaNodeView({
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
 
-      {/* Anillo decorativo exterior */}
+      {/* Pestaña de cabecera */}
       <div
         style={{
-          position: "absolute",
-          inset: "-8px",
-          borderRadius: "50%",
-          border: `1.5px dashed ${accentBorder}`,
-          opacity: 0.35,
-          pointerEvents: "none",
-          animation: isSelected ? "spin 12s linear infinite" : "none",
-        }}
-      />
-
-      {/* Anillo decorativo interior */}
-      <div
-        style={{
-          position: "absolute",
-          inset: "18px",
-          borderRadius: "50%",
-          border: `1.5px solid ${accentBorder}`,
-          opacity: 0.25,
-          pointerEvents: "none",
-        }}
-      />
-
-      <Map size={52} color={accentColor} style={{ flexShrink: 0 }} />
-      <span
-        style={{
-          fontSize: `${fontSize}px`,
+          width: "160px",
+          height: "40px",
+          background: tabBg,
+          color: "#FFFFFF",
+          borderTopLeftRadius: "8px",
+          borderTopRightRadius: "8px",
+          padding: "0 10px",
+          fontSize: "22px",
           fontWeight: 800,
-          color: themeConfig.colors.textPrimary,
-          textAlign: "center",
-          padding: "0 20px",
-          lineHeight: 1.2,
-          overflow: "hidden",
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-        } as React.CSSProperties}
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          letterSpacing: "0.6px",
+          boxShadow: "0 -2px 6px rgba(0,0,0,0.05)",
+        }}
       >
-        {node.name}
-      </span>
+        <Map size={28} color="#FFFFFF" />
+        <span>ÁREA</span>
+      </div>
+
+      {/* Cuerpo principal (marco punteado) */}
+      <div
+        style={{
+          flex: 1,
+          borderRadius: "12px",
+          borderTopLeftRadius: 0,
+          border: `2px dashed ${borderColor}`,
+          backgroundColor: bgColor,
+          boxShadow: shadow,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "10px",
+          padding: "16px",
+          position: "relative",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span
+            style={{
+              fontSize: `${fontSize}px`,
+              fontWeight: 800,
+              color: textColor,
+              textAlign: "center",
+              lineHeight: 1.2,
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+            } as React.CSSProperties}
+          >
+            {node.name}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

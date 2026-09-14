@@ -58,8 +58,23 @@ export default function AgentCanvas() {
   const themeConfig = getThemeConfig(theme);
 
   const [isMounted, setIsMounted] = useState(false);
-  const [scale, setScale] = useState<number>(DISCRETE_ZOOM_LEVELS[0]);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [{ scale, position }, setViewport] = useState({
+    scale: DISCRETE_ZOOM_LEVELS[0],
+    position: { x: 0, y: 0 },
+  });
+  const setScale = (s: number | ((prev: number) => number)) => {
+    setViewport((prev) => ({
+      ...prev,
+      scale: typeof s === "function" ? s(prev.scale) : s,
+    }));
+  };
+  const setPosition = (p: { x: number; y: number } | ((prev: { x: number; y: number }) => { x: number; y: number })) => {
+    setViewport((prev) => ({
+      ...prev,
+      position: typeof p === "function" ? p(prev.position) : p,
+    }));
+  };
+
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [isSemanticZoomActive, setIsSemanticZoomActive] = useState(true);
 
@@ -127,29 +142,31 @@ export default function AgentCanvas() {
     }
 
     const loop = () => {
-      let isScaleDone = false;
-      let isPosDone = false;
-      
-      setScale((prevScale) => {
-        const nextScale = prevScale + (targetScaleRef.current - prevScale) * 0.18;
-        if (Math.abs(targetScaleRef.current - nextScale) < 0.001) {
-          isScaleDone = true;
-          return targetScaleRef.current;
+      let isDone = false;
+
+      setViewport((prev) => {
+        const targetScale = targetScaleRef.current;
+        const targetPos = targetPosRef.current;
+
+        const nextScale = prev.scale + (targetScale - prev.scale) * 0.28;
+        const nextX = prev.position.x + (targetPos.x - prev.position.x) * 0.28;
+        const nextY = prev.position.y + (targetPos.y - prev.position.y) * 0.28;
+
+        const scaleDone = Math.abs(targetScale - nextScale) < 0.001;
+        const posDone = Math.abs(targetPos.x - nextX) < 0.2 && Math.abs(targetPos.y - nextY) < 0.2;
+
+        if (scaleDone && posDone) {
+          isDone = true;
+          return { scale: targetScale, position: targetPos };
         }
-        return nextScale;
+
+        return {
+          scale: scaleDone ? targetScale : nextScale,
+          position: posDone ? targetPos : { x: nextX, y: nextY },
+        };
       });
 
-      setPosition((prevPos) => {
-        const nextX = prevPos.x + (targetPosRef.current.x - prevPos.x) * 0.18;
-        const nextY = prevPos.y + (targetPosRef.current.y - prevPos.y) * 0.18;
-        if (Math.abs(targetPosRef.current.x - nextX) < 0.2 && Math.abs(targetPosRef.current.y - nextY) < 0.2) {
-          isPosDone = true;
-          return targetPosRef.current;
-        }
-        return { x: nextX, y: nextY };
-      });
-
-      if (!isScaleDone || !isPosDone) {
+      if (!isDone) {
         rafId.current = requestAnimationFrame(loop);
       } else {
         rafId.current = null;

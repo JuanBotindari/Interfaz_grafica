@@ -1,4 +1,4 @@
-export type NodeType = "HUB" | "DEPARTMENT" | "AREA" | "HUB2" | "PROCESS" | "SUBPROCESS" | "GROUP" | "AGENT" | "TOOL" | "WORKER" | "TASK" | "DECISION" | "KNOWLEDGE_BASE" | "ACTION" | "RESOURCE";
+export type NodeType = "HUB" | "DEPARTMENT" | "AREA" | "HUB2" | "PROCESS" | "SUBPROCESS" | "GROUP" | "AGENT" | "TOOL" | "WORKER" | "TASK" | "DECISION" | "KNOWLEDGE_BASE" | "ACTION" | "RESOURCE" | "NOTE";
 
 export type AIModel = "GPT-4o" | "Claude 3.5 Sonnet" | "Local Ollama";
 
@@ -12,6 +12,7 @@ export interface CustomNode {
   role: string;
   type: NodeType;
   department?: string;
+  description?: string;
   status?: "Active" | "Idle" | "Error";
   latency?: string;
   x: number;

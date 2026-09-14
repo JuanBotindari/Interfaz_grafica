@@ -3,23 +3,32 @@
 import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
-import { getThemeConfig } from "@/config/themes";
-import { GitBranch } from "lucide-react";
+import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { GitBranch, Layers } from "lucide-react";
 
 interface Props {
   node: CustomNode;
   isSelected: boolean;
+  zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
 
-export default function SubprocessNode({ node, isSelected, onMouseDown, onContextMenu }: Props) {
+export default function SubprocessNode({ node, isSelected, zoomScale = 1, isSemanticZoomActive = true, onMouseDown, onContextMenu }: Props) {
   const theme = useGraphStore((s) => s.theme);
-  const themeConfig = getThemeConfig(theme);
   const isSantander = theme === "santander";
 
-  const accentColor = isSantander ? "#EC0000" : "#818cf8";
-  const accentBg = isSantander ? "rgba(236,0,0,0.06)" : "rgba(129,140,248,0.08)";
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
+  const width = NODE_SIZES.SUBPROCESS.width;
+  const height = NODE_SIZES.SUBPROCESS.height;
+
+  const borderColor = isSantander ? (isSelected ? "#EC0000" : "#D1D5DB") : (isSelected ? "#00F0FF" : "#3b82f6");
+  const accentColor = isSantander ? "#EC0000" : "#38BDF8";
+  const bgColor = isSantander ? "#FFFFFF" : "#0F172A";
+  const shadow = isSantander
+    ? (isSelected ? "0 6px 18px rgba(236,0,0,0.25)" : "0 4px 12px rgba(0,0,0,0.06)")
+    : (isSelected ? "0 0 16px rgba(0, 240, 255, 0.35)" : "0 4px 16px rgba(0,0,0,0.4)");
 
   return (
     <div
@@ -30,29 +39,22 @@ export default function SubprocessNode({ node, isSelected, onMouseDown, onContex
         position: "absolute",
         left: `${node.x}px`,
         top: `${node.y}px`,
-        minWidth: "150px",
-        width: "150px",
-        minHeight: "50px",
-        height: "60px",
-        backgroundColor: themeConfig.nodes.bg,
-        // Double border effect via outline + border
-        border: isSelected
-          ? `2px solid ${accentColor}`
-          : `1px solid ${isSantander ? "rgba(236,0,0,0.3)" : "rgba(129,140,248,0.4)"}`,
-        outline: isSelected
-          ? `2px solid ${accentColor}22`
-          : `1px solid ${isSantander ? "rgba(236,0,0,0.1)" : "rgba(129,140,248,0.15)"}`,
-        outlineOffset: "1px",
-        borderRadius: "6px",
-        overflow: "hidden",
-        boxShadow: isSelected
-          ? `0 0 14px ${isSantander ? "rgba(236,0,0,0.3)" : "rgba(129,140,248,0.35)"}`
-          : themeConfig.nodes.boxShadow,
+        width: `${width}px`,
+        height: `${height}px`,
+        transform: `scale(${scaleFactor})`,
+        transformOrigin: "center center",
+        backgroundColor: bgColor,
+        border: `2px solid ${borderColor}`,
+        borderRadius: "8px",
+        boxShadow: shadow,
         cursor: "grab",
         userSelect: "none",
         zIndex: 10,
         display: "flex",
-        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "8px",
+        padding: "8px 16px",
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
@@ -60,42 +62,26 @@ export default function SubprocessNode({ node, isSelected, onMouseDown, onContex
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
 
-      <div style={{
-        padding: "2px 8px",
-        backgroundColor: accentBg,
-        borderBottom: `1px solid ${isSantander ? "rgba(236,0,0,0.15)" : "rgba(129,140,248,0.2)"}`,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-          <GitBranch size={12} color={accentColor} />
-          <span style={{ fontSize: "10px", fontWeight: 700, color: accentColor, textTransform: "uppercase", letterSpacing: "0.02em" }}>
-            Subproceso
-          </span>
-        </div>
-        {node.status && (
-          <span style={{ fontSize: "8px", fontWeight: 600, color: "#22c55e", backgroundColor: "rgba(34,197,94,0.12)", padding: "1px 4px", borderRadius: "3px" }}>
-            {node.status}
-          </span>
-        )}
-      </div>
+      {/* Líneas verticales laterales características de Subproceso UML */}
+      <div style={{ position: "absolute", left: "8px", top: 0, bottom: 0, width: "2px", backgroundColor: accentColor, opacity: 0.6 }} />
+      <div style={{ position: "absolute", right: "8px", top: 0, bottom: 0, width: "2px", backgroundColor: accentColor, opacity: 0.6 }} />
 
-      <div style={{ padding: "6px 8px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        <span style={{
-          fontSize: "12px",
+      <GitBranch size={16} color={accentColor} style={{ flexShrink: 0 }} />
+      <span
+        style={{
+          fontSize: `${NODE_TEXT.SUBPROCESS.title}px`,
           fontWeight: 700,
-          color: themeConfig.colors.textPrimary,
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-          lineHeight: 1.2,
+          color: isSantander ? "#111827" : "#F8FAFC",
           textAlign: "center",
-        }}>
-          {node.name}
-        </span>
-      </div>
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          maxWidth: "100%",
+        }}
+      >
+        {node.name}
+      </span>
     </div>
   );
 }
+

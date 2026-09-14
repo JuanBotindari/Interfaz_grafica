@@ -4,8 +4,8 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
-import { Network } from "lucide-react";
+import { NODE_SIZES, NODE_TEXT, NODE_CLIPS, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { Network, Layers } from "lucide-react";
 
 interface Props {
   node: CustomNode;
@@ -26,11 +26,14 @@ export default function NodoNivel2({ node, isSelected, zoomScale = 1, isSemantic
   const height = NODE_SIZES.HUB2.height;
   const fontSize = NODE_TEXT.HUB2.title;
 
-  // Color accent: un nivel abajo del primary, más suave
-  const accentColor = isSantander ? "#f05050" : "#38bdf8";
-  const accentBg = isSantander ? "rgba(236, 0, 0, 0.12)" : "rgba(56, 189, 248, 0.12)";
-  const accentBorder = isSantander ? "rgba(236, 0, 0, 0.5)" : "rgba(56, 189, 248, 0.5)";
-  const accentGlow = isSantander ? "rgba(236, 0, 0, 0.35)" : "rgba(56, 189, 248, 0.45)";
+  const borderColor = isSantander ? "#EC0000" : "#FF007F";
+  const bgColor = isSantander ? "#E5E7EB" : "#0A0F1D";
+  const textColor = isSantander ? "#1F2937" : "#FFFFFF";
+  const clipPath = NODE_CLIPS.OCTAGON;
+  const dropFilter = isSantander ? "drop-shadow(0 4px 6px rgba(0,0,0,0.1))" : "drop-shadow(0 0 8px #FF007F)";
+
+  // Fondo de la etiqueta roja (coherente con Department y Area)
+  const tabBg = isSantander ? "#EC0000" : "linear-gradient(135deg, #EF4444, #B91C1C)";
 
   return (
     <div
@@ -45,23 +48,10 @@ export default function NodoNivel2({ node, isSelected, zoomScale = 1, isSemantic
         height: `${height}px`,
         transform: `scale(${scaleFactor})`,
         transformOrigin: "center center",
-        borderRadius: themeConfig.nodes.hubShape === "circle" ? "50%" : themeConfig.nodes.borderRadius,
-        backgroundColor: themeConfig.nodes.bg,
-        border: isSelected
-          ? `3px solid ${accentColor}`
-          : `2px solid ${accentBorder}`,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "12px",
-        boxShadow: isSelected
-          ? `0 0 18px ${accentGlow}, inset 0 0 12px ${accentBg}`
-          : `0 4px 14px rgba(0, 0, 0, 0.35), inset 0 0 8px ${accentBg}`,
+        filter: isSelected ? `drop-shadow(0 0 14px ${borderColor})` : dropFilter,
         cursor: "grab",
         userSelect: "none",
         zIndex: 10,
-        transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, box-shadow 0.2s ease, border 0.2s ease",
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
@@ -69,35 +59,79 @@ export default function NodoNivel2({ node, isSelected, zoomScale = 1, isSemantic
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
 
-      {/* Anillo decorativo interior */}
+      {/* Contenedor exterior (Borde con clip-path) */}
       <div
         style={{
-          position: "absolute",
-          inset: "14px",
-          borderRadius: "50%",
-          border: `1.5px solid ${accentBorder}`,
-          opacity: 0.4,
-          pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+          clipPath,
+          backgroundColor: borderColor,
+          padding: "2px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
-      />
-
-      <Network size={54} color={accentColor} style={{ flexShrink: 0 }} />
-      <span
-        style={{
-          fontSize: `${fontSize}px`,
-          fontWeight: 800,
-          color: themeConfig.colors.textPrimary,
-          textAlign: "center",
-          padding: "0 18px",
-          lineHeight: 1.2,
-          overflow: "hidden",
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-        } as React.CSSProperties}
       >
-        {node.name}
-      </span>
+        {/* Contenedor interior (Fondo del nodo) */}
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            clipPath,
+            backgroundColor: bgColor,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+            padding: "16px",
+            position: "relative",
+          }}
+        >
+          {/* Etiqueta roja superior (dentro de la forma) */}
+          <div
+            style={{
+              position: "absolute",
+              top: "0%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: tabBg,
+              color: "#FFFFFF",
+              padding: "3px 12px",
+              borderRadius: "6px",
+              fontSize: "28px",
+              fontWeight: 800,
+              letterSpacing: "1px",
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+              zIndex: 2,
+              whiteSpace: "nowrap",
+            }}
+          >
+            <Layers size={12} color="#FFFFFF" />
+            <span>SUB-ÁREA</span>
+          </div>
+
+          <Network size={40} color={borderColor} style={{ flexShrink: 0 }} />
+          <span
+            style={{
+              fontSize: `${fontSize}px`,
+              fontWeight: 800,
+              color: textColor,
+              textAlign: "center",
+              lineHeight: 1.2,
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+            } as React.CSSProperties}
+          >
+            {node.name}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

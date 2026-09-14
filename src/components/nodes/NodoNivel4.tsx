@@ -3,11 +3,14 @@
 import { CustomNode } from "@/types";
 import { Cpu } from "lucide-react";
 import NodeHandle from "./NodeHandle";
+import { useGraphStore } from "@/store/useGraphStore";
+import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
 
 interface NodeViewProps {
   node: CustomNode;
   isSelected: boolean;
-  zoomScale: number;
+  zoomScale?: number;
+  isSemanticZoomActive?: boolean;
   onMouseDown: (e: React.MouseEvent) => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
@@ -15,10 +18,24 @@ interface NodeViewProps {
 export default function NodoNivel4({
   node,
   isSelected,
-  zoomScale,
+  zoomScale = 1,
+  isSemanticZoomActive = true,
   onMouseDown,
   onContextMenu,
 }: NodeViewProps) {
+  const theme = useGraphStore((s) => s.theme);
+  const isSantander = theme === "santander";
+
+  const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
+  const width = NODE_SIZES.WORKER?.width || 128;
+  const height = NODE_SIZES.WORKER?.height || 40;
+
+  const borderColor = isSantander ? (isSelected ? "#EC0000" : "#E5E7EB") : (isSelected ? "#00F0FF" : "rgba(6, 182, 212, 0.4)");
+  const bgColor = isSantander ? "#FAFAFA" : "#0A0F1D";
+  const textColor = isSantander ? "#374151" : "#E0F2FE";
+  const shadow = isSantander
+    ? (isSelected ? "0 0 10px rgba(236,0,0,0.2)" : "0 1px 3px rgba(0,0,0,0.05)")
+    : (isSelected ? "0 0 12px rgba(6, 182, 212, 0.6)" : "0 2px 8px rgba(0,0,0,0.5)");
 
   return (
     <div
@@ -29,35 +46,42 @@ export default function NodoNivel4({
         position: "absolute",
         left: `${node.x}px`,
         top: `${node.y}px`,
-        width: "130px",
-        height: "42px",
-        backgroundColor: "rgba(15, 23, 42, 0.85)",
-        border: `1px solid ${isSelected ? "#22d3ee" : "rgba(6, 182, 212, 0.4)"}`,
-        padding: "3px 6px",
-        borderRadius: "4px",
+        width: `${width}px`,
+        height: `${height}px`,
+        transform: `scale(${scaleFactor})`,
+        transformOrigin: "center center",
+        backgroundColor: bgColor,
+        border: `1px solid ${borderColor}`,
+        padding: "4px 8px",
+        borderRadius: "6px",
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        gap: "6px",
         cursor: "grab",
-        boxShadow: isSelected ? "0 0 12px rgba(6, 182, 212, 0.6)" : "0 2px 8px rgba(0,0,0,0.5)",
-        zIndex: isSelected ? 20 : 5,
-        animation: "fadeIn 0.25s ease-out",
+        userSelect: "none",
+        boxShadow: shadow,
+        zIndex: 10,
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
       <NodeHandle nodeId={node.id} position="bottom" />
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
-      <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-        <Cpu size={10} color="#22d3ee" />
-        <span style={{ fontSize: "8px", color: "#e0f2fe", fontWeight: "bold" }}>{node.name}</span>
-      </div>
 
-      <div style={{ display: "flex", gap: "6px", marginTop: "2px" }}>
-        <span style={{ fontSize: "7px", color: "#22c55e" }}>{node.status}</span>
-        <span style={{ fontSize: "7px", color: "#06b6d4", fontFamily: "monospace" }}>{node.latency}</span>
-      </div>
+      <Cpu size={14} color={isSantander ? "#EC0000" : "#00F0FF"} style={{ flexShrink: 0 }} />
+      <span
+        style={{
+          fontSize: `${NODE_TEXT.WORKER?.title || 11}px`,
+          fontWeight: 700,
+          color: textColor,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {node.name}
+      </span>
     </div>
   );
 }
