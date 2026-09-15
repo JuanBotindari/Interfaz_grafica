@@ -4,7 +4,7 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { NODE_TEXT, getNodeScaleForZoom, getBaseNodeDimensions } from "@/config/nodeConfig";
 import { Zap } from "lucide-react";
 
 interface Props {
@@ -22,8 +22,7 @@ export default function ActionNode({ node, isSelected, zoomScale = 1, isSemantic
   const isSantander = theme === "santander";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
-  const width = NODE_SIZES.ACTION.width;
-  const height = NODE_SIZES.ACTION.height;
+  const { width, height } = getBaseNodeDimensions(node);
 
   const accentColor = isSantander ? "#d97706" : "#fb923c";
   const accentBg = isSantander ? "rgba(217,119,6,0.12)" : "rgba(251,146,60,0.12)";
@@ -58,7 +57,6 @@ export default function ActionNode({ node, isSelected, zoomScale = 1, isSemantic
         userSelect: "none",
         zIndex: 10,
         whiteSpace: "nowrap",
-        maxWidth: "200px",
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
@@ -68,7 +66,7 @@ export default function ActionNode({ node, isSelected, zoomScale = 1, isSemantic
 
       <Zap size={13} color={accentColor} style={{ flexShrink: 0 }} />
       <span style={{
-        fontSize: "11px",
+        fontSize: `${NODE_TEXT.ACTION.title}px`,
         fontWeight: 700,
         color: themeConfig.colors.textPrimary,
         overflow: "hidden",

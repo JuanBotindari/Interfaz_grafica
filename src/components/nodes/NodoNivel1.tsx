@@ -5,7 +5,7 @@ import { Bot } from "lucide-react";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { NODE_TEXT, getNodeScaleForZoom, getBaseNodeDimensions } from "@/config/nodeConfig";
 
 interface Props {
   node: CustomNode;
@@ -21,8 +21,9 @@ export default function NodoNivel1({ node, isSelected, zoomScale = 1, isSemantic
   const themeConfig = getThemeConfig(theme);
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
-  const width = NODE_SIZES.AGENT.width;
-  const height = NODE_SIZES.AGENT.height;
+  const { width, height } = getBaseNodeDimensions(node);
+
+  const botIconSize = Math.max(18, Math.round(NODE_TEXT.AGENT.title * 0.75));
 
   return (
     <div
@@ -40,7 +41,7 @@ export default function NodoNivel1({ node, isSelected, zoomScale = 1, isSemantic
         backgroundColor: themeConfig.nodes.bg,
         border: isSelected ? themeConfig.nodes.borderSelected : themeConfig.nodes.border,
         borderRadius: themeConfig.nodes.borderRadius,
-        padding: "10px",
+        padding: "12px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -49,6 +50,7 @@ export default function NodoNivel1({ node, isSelected, zoomScale = 1, isSemantic
         userSelect: "none",
         zIndex: 10,
         color: themeConfig.colors.textPrimary,
+        overflow: "visible",
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />
@@ -57,15 +59,36 @@ export default function NodoNivel1({ node, isSelected, zoomScale = 1, isSemantic
       <NodeHandle nodeId={node.id} position="right" />
 
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <Bot size={18} color={themeConfig.colors.primary} />
-        <span style={{ fontSize: "12px", fontWeight: 600, color: themeConfig.colors.textPrimary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <Bot size={botIconSize} color={themeConfig.colors.primary} style={{ flexShrink: 0 }} />
+        <span style={{
+          fontSize: `${NODE_TEXT.AGENT.title}px`,
+          fontWeight: 600,
+          color: themeConfig.colors.textPrimary,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}>
           {node.name}
         </span>
       </div>
 
-      <div style={{ fontSize: "10px", color: themeConfig.colors.textSecondary }}>{node.role}</div>
+      <div style={{
+        fontSize: `${NODE_TEXT.AGENT.subtitle}px`,
+        color: themeConfig.colors.textSecondary,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      }}>
+        {node.role}
+      </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "9px", color: themeConfig.colors.textSecondary }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        fontSize: `${NODE_TEXT.AGENT.meta}px`,
+        color: themeConfig.colors.textSecondary,
+      }}>
         <span>{node.model || "GPT-4o"}</span>
         <span style={{ color: node.status === "Active" ? "#22c55e" : "#eab308" }}>{node.status}</span>
       </div>

@@ -3,7 +3,7 @@
 import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
-import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { NODE_TEXT, getNodeScaleForZoom, getBaseNodeDimensions } from "@/config/nodeConfig";
 import { GitBranch, Layers } from "lucide-react";
 
 interface Props {
@@ -20,8 +20,7 @@ export default function SubprocessNode({ node, isSelected, zoomScale = 1, isSema
   const isSantander = theme === "santander";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
-  const width = NODE_SIZES.SUBPROCESS.width;
-  const height = NODE_SIZES.SUBPROCESS.height;
+  const { width, height } = getBaseNodeDimensions(node);
 
   const borderColor = isSantander ? (isSelected ? "#EC0000" : "#D1D5DB") : (isSelected ? "#00F0FF" : "#3b82f6");
   const accentColor = isSantander ? "#EC0000" : "#38BDF8";

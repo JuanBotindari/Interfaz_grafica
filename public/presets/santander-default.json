@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "theme": "santander",
-  "createdAt": "2026-09-14T14:25:06.206Z",
+  "createdAt": "2026-09-15T07:33:26.731Z",
   "nodes": [
     {
       "id": "n1-soporte",
@@ -37,17 +37,15 @@
       "id": "sop-p-contratacion",
       "name": "Contratación",
       "type": "PROCESS",
-      "x": 1520,
-      "y": -1355.555243466495,
-      "width": 150,
-      "height": 60
+      "x": 1480,
+      "y": -1355.555243466495
     },
     {
       "id": "sop-c-nuevo-prod",
       "name": "Nuevo Producto",
       "type": "SUBPROCESS",
-      "x": 1255.5977176500642,
-      "y": -1160,
+      "x": 1262.2843651939188,
+      "y": -1153.8847287740577,
       "width": 140,
       "height": 50
     },
@@ -55,43 +53,43 @@
       "id": "sop-c-np-sol",
       "name": "Solicitud Negocio",
       "type": "TASK",
-      "x": 1255.5977176500642,
-      "y": -1011.5552434664951
+      "x": 1295.5977176500642,
+      "y": -1049.1224213394044
     },
     {
       "id": "sop-c-np-anl",
       "name": "Análisis de Impacto",
       "type": "TASK",
-      "x": 1255.5977176500642,
-      "y": -871.0079560347456
+      "x": 1295.5977176500642,
+      "y": -908.0418005743215
     },
     {
       "id": "sop-c-np-prep",
       "name": "Preparación del KID",
       "type": "TASK",
-      "x": 1255.5977176500642,
-      "y": -746.336050281667
+      "x": 1295.5977176500642,
+      "y": -785.2183872635444
     },
     {
       "id": "sop-c-np-utl",
       "name": "LPA",
       "type": "RESOURCE",
       "x": 1287.2210805647937,
-      "y": -585.4260363710607
+      "y": -681.79321424397
     },
     {
       "id": "sop-c-np-val",
       "name": "Validación",
       "type": "DECISION",
       "x": 1287.2210805647937,
-      "y": -453.5552434664951
+      "y": -606.225962523311
     },
     {
       "id": "sop-c-np-prod",
       "name": "Producción",
       "type": "ACTION",
-      "x": 1262.2843651939188,
-      "y": 18.639712169735503
+      "x": 1291.617698527252,
+      "y": -224.75731249576165
     },
     {
       "id": "sop-c-act-prod",
@@ -106,45 +104,43 @@
       "id": "sop-c-ap-sol",
       "name": "Solicitud Negocio",
       "type": "TASK",
-      "x": 1692.4043947411428,
-      "y": -1003.1224213394044
+      "x": 1732.4043947411428,
+      "y": -1049.1224213394044
     },
     {
       "id": "sop-c-ap-anl",
       "name": "Análisis de Impacto",
       "type": "TASK",
-      "x": 1692.4043947411428,
-      "y": -871.0079560347456
+      "x": 1732.4043947411428,
+      "y": -917.0079560347456
     },
     {
       "id": "sop-c-ap-prep",
       "name": "Preparación del KID",
       "type": "TASK",
-      "x": 1692.4043947411428,
-      "y": -739.2183872635444
+      "x": 1732.4043947411428,
+      "y": -785.2183872635444
     },
     {
       "id": "sop-c-ap-utl",
       "name": "LPA",
       "type": "RESOURCE",
-      "x": 1725.847785477085,
-      "y": -585.4260363710607
+      "x": 1732.4043947411428,
+      "y": -681.79321424397
     },
     {
       "id": "sop-c-ap-val",
       "name": "Validación",
       "type": "DECISION",
-      "x": 1725.847785477085,
-      "y": -453.5552434664951
+      "x": 1742.6666666666665,
+      "y": -590.2856014653254
     },
     {
       "id": "sop-p-postcontratacion",
       "name": "Post-Contratación",
       "type": "PROCESS",
       "x": 2404.2619042336214,
-      "y": -1355.555243466495,
-      "width": 160,
-      "height": 60
+      "y": -1355.555243466495
     },
     {
       "id": "sop-post-manuales",
@@ -159,22 +155,22 @@
       "id": "sop-post-m-act",
       "name": "Actualización Quincenal de Rentas",
       "type": "TASK",
-      "x": 2212.4499755427983,
-      "y": -883.4524004791899
+      "x": 2249.7833088761317,
+      "y": -940.1190671458565
     },
     {
       "id": "sop-post-m-sol",
       "name": "Solicitud Negocio",
       "type": "TASK",
-      "x": 2212.4499755427983,
-      "y": -724.7857338125234
+      "x": 2249.7833088761317,
+      "y": -830.1190671458567
     },
     {
       "id": "sop-post-m-def",
       "name": "Revision de los ficheros (uno por cada producto)",
       "type": "TASK",
-      "x": 2212.4499755427983,
-      "y": -585.4260363710607
+      "x": 2249.7833088761317,
+      "y": -736.0927030377273
     },
     {
       "id": "sop-post-semiauto",
@@ -199,9 +195,7 @@
       "name": "Otros",
       "type": "PROCESS",
       "x": 3552.5856875151358,
-      "y": -1355.555243466495,
-      "width": 130,
-      "height": 60
+      "y": -1355.555243466495
     },
     {
       "id": "sop-o-negocio",
@@ -257,13 +251,6 @@
       "height": 50
     },
     {
-      "id": "sop-ed-tablas-desc",
-      "name": "Negocio, Zona Timbres, N°, LFA, Tecnología, Cliente",
-      "type": "RESOURCE",
-      "x": 2919.544170445429,
-      "y": -1813.555243466495
-    },
-    {
       "id": "sop-ed-sistemas",
       "name": "Sistemas",
       "type": "SUBPROCESS",
@@ -271,13 +258,6 @@
       "y": -513.5552434664951,
       "width": 110,
       "height": 50
-    },
-    {
-      "id": "sop-ed-sistemas-desc",
-      "name": "Constantes LFA, Patrocinio, Estadística",
-      "type": "RESOURCE",
-      "x": 3075.4182199641473,
-      "y": -1813.555243466495
     },
     {
       "id": "sop-ed-validaciones",
@@ -289,13 +269,6 @@
       "height": 50
     },
     {
-      "id": "sop-ed-val-desc",
-      "name": "RAM vs PDF, Cifa vs PDF, Campos Obligatorios",
-      "type": "RESOURCE",
-      "x": 3430.352202850926,
-      "y": -1803.2790041984938
-    },
-    {
       "id": "sop-ed-proveedores",
       "name": "Proveedores",
       "type": "SUBPROCESS",
@@ -303,13 +276,6 @@
       "y": -811.5552434664951,
       "width": 120,
       "height": 50
-    },
-    {
-      "id": "sop-ed-prov-desc",
-      "name": "LFA, SFT, Proveedor de Imprenta",
-      "type": "RESOURCE",
-      "x": 3264.875865947314,
-      "y": -1792.4539359766281
     },
     {
       "id": "n2-admin-polizas",
@@ -351,62 +317,58 @@
       "id": "n3-seleccion-riesgo",
       "name": "Selección de Riesgo",
       "type": "PROCESS",
-      "x": -1292.899052808532,
-      "y": -1470.444756533505,
-      "width": 130,
-      "height": 60
+      "x": -1300,
+      "y": -1500
     },
     {
       "id": "n3-polizas",
       "name": "Pólizas",
       "type": "PROCESS",
-      "x": -1088.3729679397284,
-      "y": -1470.444756533505,
-      "width": 120,
-      "height": 60
+      "x": -1120,
+      "y": -1500
     },
     {
       "id": "n3-siga",
       "name": "SIGA (Banca Privada)",
-      "type": "SUBPROCESS",
-      "x": -897.2437881933354,
-      "y": -1470.444756533505,
+      "type": "PROCESS",
+      "x": -932,
+      "y": -1500,
       "width": 140,
       "height": 60
     },
     {
       "id": "n3-extornos",
       "name": "Extornos / Recibos",
-      "type": "SUBPROCESS",
-      "x": -688.6052505025123,
-      "y": -1470.444756533505,
+      "type": "PROCESS",
+      "x": -739.9385838358456,
+      "y": -1500,
       "width": 140,
       "height": 60
     },
     {
       "id": "n3-fallecimiento",
       "name": "Fallecimiento",
-      "type": "SUBPROCESS",
-      "x": -479.61353059290514,
-      "y": -1470.444756533505,
+      "type": "PROCESS",
+      "x": -479.3333333333333,
+      "y": -1500,
       "width": 130,
       "height": 60
     },
     {
       "id": "n3-invalidez",
       "name": "Invalidez",
-      "type": "SUBPROCESS",
-      "x": -249.18676248744077,
-      "y": -1470.444756533505,
+      "type": "PROCESS",
+      "x": -257.1867624874408,
+      "y": -1500,
       "width": 120,
       "height": 60
     },
     {
       "id": "n3-otros",
       "name": "Otros",
-      "type": "SUBPROCESS",
-      "x": -4.469962251404922,
-      "y": -1470.444756533505,
+      "type": "PROCESS",
+      "x": -33.136628918071594,
+      "y": -1500,
       "width": 110,
       "height": 60
     },
@@ -414,45 +376,43 @@
       "id": "kb-main",
       "name": "Base de Conocimiento RAG",
       "type": "KNOWLEDGE_BASE",
-      "x": -680,
-      "y": -1220,
-      "width": 220,
-      "height": 70
+      "x": -678.6666666666667,
+      "y": -1200
     },
     {
       "id": "kb-incidencias",
       "name": "Incidencias Detectadas",
       "type": "RESOURCE",
-      "x": -860,
-      "y": -863.4524004791899
+      "x": -932,
+      "y": -883.4524004791899
     },
     {
       "id": "kb-caus",
       "name": "CAUs",
       "type": "RESOURCE",
-      "x": -701.0797880990044,
-      "y": -859.2245532505885
+      "x": -773.0797880990044,
+      "y": -883.4524004791899
     },
     {
       "id": "kb-procedimientos",
       "name": "Procedimientos",
       "type": "RESOURCE",
-      "x": -530.2800082567245,
-      "y": -859.2245532505885
+      "x": -592,
+      "y": -883.4524004791899
     },
     {
       "id": "kb-jira",
       "name": "Jira API",
       "type": "TOOL",
-      "x": -364.23158346236164,
-      "y": -859.2245532505885
+      "x": -433.99999999999994,
+      "y": -883.4524004791899
     },
     {
       "id": "kb-kpis",
       "name": "KPIs",
       "type": "RESOURCE",
-      "x": -205.90634121657376,
-      "y": -859.2245532505885
+      "x": -280,
+      "y": -883.4524004791899
     },
     {
       "id": "kb-powerbi",
@@ -472,7 +432,7 @@
       "id": "res-reportes",
       "name": "Reportes",
       "type": "RESOURCE",
-      "x": -2111.6066960507396,
+      "x": -2099.6066960507396,
       "y": -1530.4025891053782
     },
     {
@@ -499,9 +459,9 @@
     {
       "id": "mc-main",
       "name": "Modelo de Control",
-      "type": "SUBPROCESS",
+      "type": "AGENT",
       "x": -2000,
-      "y": -1200,
+      "y": -1210,
       "width": 160,
       "height": 70
     },
@@ -509,35 +469,35 @@
       "id": "agent-mdc",
       "name": "Agente MDC",
       "type": "AGENT",
-      "x": -2020,
+      "x": -2000,
       "y": -1040
     },
     {
       "id": "act-recomendaciones",
       "name": "Recomendaciones",
       "type": "ACTION",
-      "x": -2296.5127365922463,
+      "x": -2242.341654865208,
       "y": -801.7377891683011
     },
     {
       "id": "act-mail-1",
       "name": "Envío de Mails",
       "type": "ACTION",
-      "x": -2075.2688198489386,
+      "x": -2021.0977381219004,
       "y": -801.7377891683011
     },
     {
       "id": "act-controles",
       "name": "Definición de controles",
       "type": "ACTION",
-      "x": -1876.602153182272,
+      "x": -1822.431071455234,
       "y": -801.7377891683011
     },
     {
       "id": "act-mail-2",
       "name": "Envío de Mails",
       "type": "ACTION",
-      "x": -1664.602153182272,
+      "x": -1610.431071455234,
       "y": -801.7377891683011
     },
     {
@@ -546,8 +506,8 @@
       "role": "Sin definir",
       "type": "TOOL",
       "status": "Idle",
-      "x": 1386.2573808957663,
-      "y": -320.60297533450284
+      "x": 1345.2210805647937,
+      "y": -476.6666666666666
     },
     {
       "id": "node-1788961937789",
@@ -555,8 +515,8 @@
       "role": "Sin definir",
       "type": "ACTION",
       "status": "Idle",
-      "x": 1160,
-      "y": -320.60297533450284
+      "x": 1175.3333333333333,
+      "y": -465.99999999999994
     },
     {
       "id": "node-1788961995248",
@@ -564,8 +524,8 @@
       "role": "Sin definir",
       "type": "DECISION",
       "status": "Idle",
-      "x": 1202.1700105033688,
-      "y": -201.55524346649509
+      "x": 1236.1700105033688,
+      "y": -378.95226813199224
     },
     {
       "id": "node-1788962016459",
@@ -573,8 +533,8 @@
       "role": "Sin definir",
       "type": "DECISION",
       "status": "Idle",
-      "x": 1386.2573808957663,
-      "y": -201.55524346649509
+      "x": 1416.924047562433,
+      "y": -378.95226813199224
     },
     {
       "id": "node-1788962107241",
@@ -582,17 +542,17 @@
       "role": "Sin definir",
       "type": "DECISION",
       "status": "Idle",
-      "x": 1631.9410175078838,
-      "y": -201.55524346649509
+      "x": 1665.9410175078838,
+      "y": -378.95226813199224
     },
     {
       "id": "node-1788962108703",
-      "name": "Nuevo DECISION",
+      "name": "Informacion Correcta",
       "role": "Sin definir",
       "type": "DECISION",
       "status": "Idle",
-      "x": 1786.277167115083,
-      "y": -201.55524346649509
+      "x": 1820.277167115083,
+      "y": -378.95226813199224
     },
     {
       "id": "node-1788962110763",
@@ -600,8 +560,8 @@
       "role": "Sin definir",
       "type": "ACTION",
       "status": "Idle",
-      "x": 1699.5746294954406,
-      "y": 18.639712169735503
+      "x": 1728.9079628287739,
+      "y": -224.75731249576165
     },
     {
       "id": "node-1788964215856",
@@ -627,8 +587,8 @@
       "role": "Sin definir",
       "type": "ACTION",
       "status": "Idle",
-      "x": 2220.6493466763445,
-      "y": -432.8926291899777
+      "x": 2218.6721977650204,
+      "y": -632.8926291899777
     },
     {
       "id": "node-1788964334372",
@@ -636,8 +596,8 @@
       "role": "Sin definir",
       "type": "ACTION",
       "status": "Idle",
-      "x": 2220.6493466763445,
-      "y": -320.60297533450284
+      "x": 2218.6721977650204,
+      "y": -542.2219101331617
     },
     {
       "id": "node-1788964384256",
@@ -645,8 +605,8 @@
       "role": "Sin definir",
       "type": "TASK",
       "status": "Idle",
-      "x": 2212.4499755427983,
-      "y": -177.78151807886638
+      "x": 2249.7833088761317,
+      "y": -425.7815180788664
     },
     {
       "id": "node-1788964392586",
@@ -654,8 +614,8 @@
       "role": "Sin definir",
       "type": "ACTION",
       "status": "Idle",
-      "x": 2220.6493466763445,
-      "y": 18.639712169735503
+      "x": 2225.3160133430115,
+      "y": -224.75731249576165
     },
     {
       "id": "node-1788964489034",
@@ -726,8 +686,8 @@
       "role": "Sin definir",
       "type": "AGENT",
       "status": "Idle",
-      "x": -1444,
-      "y": -1484.6666666666667
+      "x": -1440,
+      "y": -1440
     },
     {
       "id": "node-1789395874735",
@@ -735,8 +695,8 @@
       "role": "Sin definir",
       "type": "AGENT",
       "status": "Idle",
-      "x": 2997.5846917409112,
-      "y": -2305.6647917323576
+      "x": 2079.1400315820083,
+      "y": -2335.7030372434147
     }
   ],
   "connections": [
@@ -1229,14 +1189,6 @@
       "type": "data"
     },
     {
-      "id": "c-1789222639758",
-      "source": "node-1788961995248",
-      "target": "sop-c-np-prod",
-      "sourceHandle": "bottom",
-      "targetHandle": "top",
-      "type": "data"
-    },
-    {
       "id": "c-1789222680365",
       "source": "sop-c-ap-val",
       "target": "node-1788962107241",
@@ -1405,9 +1357,25 @@
       "type": "data"
     },
     {
-      "id": "c-1789395882221",
-      "source": "n1-soporte",
-      "target": "node-1789395874735",
+      "id": "c-1789455588418",
+      "source": "node-1788961995248",
+      "target": "sop-c-np-prod",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789455875110",
+      "source": "sop-p-postcontratacion",
+      "target": "sop-post-auto",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789457166502",
+      "source": "node-1789395874735",
+      "target": "n1-soporte",
       "sourceHandle": "right",
       "targetHandle": "left",
       "type": "data"

@@ -4,7 +4,7 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { NODE_TEXT, getNodeScaleForZoom, getBaseNodeDimensions } from "@/config/nodeConfig";
 
 interface Props {
   node: CustomNode;
@@ -21,11 +21,11 @@ export default function DecisionNode({ node, isSelected, zoomScale = 1, isSemant
   const isSantander = theme === "santander";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
-  const accentColor = isSantander ? "#f59e0b" : "#f59e0b";
+  const accentColor = isSantander ? "#835608ff" : "#f59e0b";
   const accentBg = "rgba(245,158,11,0.12)";
   const accentBorder = isSelected ? "#f59e0b" : "rgba(245,158,11,0.5)";
 
-  const size = NODE_SIZES.DECISION.width;
+  const { width, height } = getBaseNodeDimensions(node);
 
   return (
     <div
@@ -36,8 +36,8 @@ export default function DecisionNode({ node, isSelected, zoomScale = 1, isSemant
         position: "absolute",
         left: `${node.x}px`,
         top: `${node.y}px`,
-        width: `${size}px`,
-        height: `${size}px`,
+        width: `${width}px`,
+        height: `${height}px`,
         transform: `scale(${scaleFactor})`,
         transformOrigin: "center center",
         display: "flex",
@@ -53,24 +53,25 @@ export default function DecisionNode({ node, isSelected, zoomScale = 1, isSemant
       <NodeHandle nodeId={node.id} position="left" />
       <NodeHandle nodeId={node.id} position="right" />
 
-      {/* Diamond shape */}
-      <div style={{
-        width: `${size * 0.72}px`,
-        height: `${size * 0.72}px`,
-        backgroundColor: themeConfig.nodes.bg,
-        border: `${isSelected ? "2px" : "1.5px"} solid ${accentBorder}`,
-        transform: "rotate(45deg)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: isSelected
-          ? `0 0 16px rgba(245,158,11,0.5)`
-          : `0 4px 12px rgba(0,0,0,0.3)`,
-        backgroundImage: `radial-gradient(circle, ${accentBg} 0%, transparent 80%)`,
-        position: "relative",
-      }}>
-        {/* Inner fill */}
-      </div>
+      {/* SVG Diamond Shape for perfect borders at any ratio (e.g. 200x100) */}
+      <svg
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          overflow: "visible",
+          pointerEvents: "none",
+        }}
+        viewBox={`0 0 ${width} ${height}`}
+      >
+        <polygon
+          points={`${width / 2},1 1,${height / 2} ${width / 2},${height - 1} ${width - 1},${height / 2}`}
+          fill={themeConfig.nodes.bg}
+          stroke={accentBorder}
+          strokeWidth={isSelected ? 2 : 1.5}
+        />
+      </svg>
 
       {/* Text centered over the diamond, counter-rotated */}
       <div style={{
@@ -83,7 +84,7 @@ export default function DecisionNode({ node, isSelected, zoomScale = 1, isSemant
         pointerEvents: "none",
       }}>
         <span style={{
-          fontSize: "9px",
+          fontSize: `${NODE_TEXT.DECISION.title}px`,
           fontWeight: 700,
           color: accentColor,
           textAlign: "center",

@@ -154,17 +154,17 @@ export const NODE_SIZES = {
   DEPARTMENT    : { width: 400, height: 160 },
   AREA          : { width: 288, height: 192 },
   HUB2          : { width: 270, height: 250 },
-  GROUP         : { width: 240, height: 140 },
-  PROCESS       : { width: 290, height: 140 },
-  SUBPROCESS    : { width: 250, height:  64 },
-  AGENT         : { width: 180, height:  90 },
-  KNOWLEDGE_BASE: { width: 180, height:  90 },
-  TASK          : { width: 160, height:  56 },
-  DECISION      : { width:  90, height:  90 },
-  ACTION        : { width: 140, height:  40 },
-  RESOURCE      : { width: 140, height:  70 },
-  TOOL          : { width: 140, height:  50 },
-  WORKER        : { width: 144, height:  48 },
+  GROUP         : { width: 400, height: 250 },
+  PROCESS       : { width: 300, height: 120 },
+  SUBPROCESS    : { width: 300, height: 64 },
+  AGENT         : { width: 300, height: 150 },
+  KNOWLEDGE_BASE: { width: 300, height: 100 },
+  TASK          : { width: 240, height: 100 },
+  DECISION      : { width: 240, height: 190 },
+  ACTION        : { width: 300, height: 100 },
+  RESOURCE      : { width: 250, height: 120 },
+  TOOL          : { width: 250, height: 120 },
+  WORKER        : { width: 250, height:  120 },
   NOTE          : { width: 160, height: 160 },
 } as const;
 
@@ -189,15 +189,15 @@ export const NODE_VISIBILITY: Record<NodeType, VisibilityMap> = {
 
   // ── Procesos / Sub-áreas (Tier 2) ──
   HUB2          : { L1: 0.0, L2: 0.85, L3: 1.0,  L4: 0.35 },
-  PROCESS       : { L1: 0.0, L2: 0.8,  L3: 1.0,  L4: 0.35 },
-  GROUP         : { L1: 0.0, L2: 0.8,  L3: 1.0,  L4: 0.35 },
-  SUBPROCESS    : { L1: 0.0, L2: 0.75, L3: 1.0,  L4: 0.50 },
+  PROCESS       : { L1: 0.0, L2: 0.8,  L3: 1.0,  L4: 1.00 },
+  GROUP         : { L1: 0.0, L2: 0.8,  L3: 1.0,  L4: 1.00 },
+  SUBPROCESS    : { L1: 0.0, L2: 0.75, L3: 1.0,  L4: 1.00 },
 
   // ── Operativa (Tier 3) ──
   AGENT         : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
   TASK          : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
   DECISION      : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
-  KNOWLEDGE_BASE: { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
+  KNOWLEDGE_BASE: { L1: 0.0, L2: 0.0,  L3: 1.0,  L4: 1.0 },
   ACTION        : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
   RESOURCE      : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
   TOOL          : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
@@ -227,16 +227,16 @@ export const NODE_SCALE: Record<NodeType, ScaleMap> = {
 
   // ── Procesos (aparecen y crecen en L2–L3) ──
   HUB2:           { L1: 0.0,  L2: 0.75, L3: 0.9,  L4: 0.45 },
-  PROCESS:        { L1: 0.0,  L2: 0.75, L3: 1.0,  L4: 0.5  },
-  GROUP:          { L1: 0.0,  L2: 0.75, L3: 1.0,  L4: 0.5  },
-  SUBPROCESS:     { L1: 0.0,  L2: 0.7,  L3: 0.95, L4: 0.6  },
+  PROCESS:        { L1: 0.0,  L2: 0.75, L3: 1.0,  L4: 1.00  },
+  GROUP:          { L1: 0.0,  L2: 0.75, L3: 1.0,  L4: 1.00  },
+  SUBPROCESS:     { L1: 0.0,  L2: 0.7,  L3: 0.95, L4: 1.00  },
 
   // ── Operativa (tamaño completo solo en L3–L4) ──
   AGENT:          { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
   TASK:           { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
   DECISION:       { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
-  KNOWLEDGE_BASE: { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
-  ACTION:         { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
+  KNOWLEDGE_BASE: { L1: 0.0, L2: 0.0, L3: 1.00, L4: 1.0 },
+  ACTION:         { L1: 0.0, L2: 0.0, L3: 1.00, L4: 1.0 },
   RESOURCE:       { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
   TOOL:           { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
   WORKER:         { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
@@ -254,19 +254,19 @@ export const MINIMIZED_SCALE = 0.45;
 // ─────────────────────────────────────────────────────────────────────────────
 export const NODE_TEXT = {
   HUB           : { title: 40, subtitle: 20, meta: 20 },
-  DEPARTMENT    : { title: 40, subtitle: 50, meta: 50 },
+  DEPARTMENT    : { title: 40, subtitle: 30, meta: 30 },
   AREA          : { title: 30, subtitle: 10, meta:  9 },
   HUB2          : { title: 25, subtitle: 14, meta: 12 },
   GROUP         : { title: 13, subtitle: 11, meta: 10 },
-  PROCESS       : { title: 13, subtitle: 11, meta: 10 },
-  SUBPROCESS    : { title: 18, subtitle:  9, meta:  8 },
-  AGENT         : { title: 13, subtitle: 10, meta:  9 },
-  KNOWLEDGE_BASE: { title: 12, subtitle: 10, meta:  9 },
-  TASK          : { title: 12, subtitle: 10, meta:  9 },
-  DECISION      : { title: 10, subtitle:  8, meta:  8 },
-  ACTION        : { title: 10, subtitle:  8, meta:  8 },
-  RESOURCE      : { title: 10, subtitle:  8, meta:  8 },
-  TOOL          : { title: 10, subtitle:  8, meta:  8 },
+  PROCESS       : { title: 25, subtitle: 11, meta: 10 },
+  SUBPROCESS    : { title: 20, subtitle:  9, meta:  8 },
+  AGENT         : { title: 25, subtitle: 22, meta: 25 },
+  KNOWLEDGE_BASE: { title: 25, subtitle: 20, meta: 20 },
+  TASK          : { title: 22, subtitle: 10, meta:  9 },
+  DECISION      : { title: 22, subtitle:  8, meta:  8 },
+  ACTION        : { title: 25, subtitle: 18, meta:  8 },
+  RESOURCE      : { title: 25, subtitle:  8, meta:  8 },
+  TOOL          : { title: 25, subtitle:  8, meta:  8 },
   WORKER        : { title:  8, subtitle:  7, meta:  7 },
   NOTE          : { title: 11, subtitle:  9, meta:  8 },
 } as const;
@@ -416,31 +416,62 @@ export function getBaseNodeDimensions(node: CustomNode): { width: number; height
       return s.DEPARTMENT;
     case "AREA":
       return s.AREA;
-    case "HUB2":
-      return s.HUB2;
+    case "HUB2": {
+      // Los HUB2 del preset tienen dimensiones antiguas pequeñas (ej. 160×60).
+      // Solo respetar overrides si son dimensiones razonables para un HUB2.
+      const w = (node.width && node.width >= 200) ? node.width : s.HUB2.width;
+      const h = (node.height && node.height >= 150) ? node.height : s.HUB2.height;
+      return { width: w, height: h };
+    }
     case "GROUP":
-    case "PROCESS":
-      return { width: node.width || s.PROCESS.width, height: node.height || s.PROCESS.height };
-    case "SUBPROCESS":
-      return s.SUBPROCESS;
-    case "AGENT":
-      return s.AGENT;
-    case "KNOWLEDGE_BASE":
-      return { width: node.width || s.KNOWLEDGE_BASE.width, height: node.height || s.KNOWLEDGE_BASE.height };
+      return { width: node.width || s.GROUP.width, height: node.height || s.GROUP.height };
+    case "PROCESS": {
+      // Solo respetar overrides si son dimensiones razonables para un PROCESS.
+      // Valores pequeños son herencia de conversiones desde SUBPROCESS u otros tipos compactos.
+      const w = (node.width && node.width >= 200) ? node.width : s.PROCESS.width;
+      const h = (node.height && node.height >= 80) ? node.height : s.PROCESS.height;
+      return { width: w, height: h };
+    }
+    case "SUBPROCESS": {
+      // Los SUBPROCESS del preset tienen dimensiones antiguas pequeñas (ej. 110–160×50).
+      // Solo respetar overrides si son dimensiones razonables para el nuevo tamaño.
+      const w = (node.width && node.width >= 200) ? node.width : s.SUBPROCESS.width;
+      const h = (node.height && node.height >= 55) ? node.height : s.SUBPROCESS.height;
+      return { width: w, height: h };
+    }
+    case "AGENT": {
+      const w = (node.width && node.width >= 200) ? node.width : s.AGENT.width;
+      const h = (node.height && node.height >= 100) ? node.height : s.AGENT.height;
+      return { width: w, height: h };
+    }
+    case "KNOWLEDGE_BASE": {
+      const w = (node.width && node.width >= 200) ? node.width : s.KNOWLEDGE_BASE.width;
+      const h = (node.height && node.height >= 80) ? node.height : s.KNOWLEDGE_BASE.height;
+      return { width: w, height: h };
+    }
     case "NOTE":
       return { width: node.width || s.NOTE.width, height: node.height || s.NOTE.height };
-    case "TASK":
-      return s.TASK;
-    case "DECISION":
-      return s.DECISION;
-    case "ACTION":
-      return s.ACTION;
+    case "TASK": {
+      const w = (node.width && node.width >= 200) ? node.width : s.TASK.width;
+      const h = (node.height && node.height >= 80) ? node.height : s.TASK.height;
+      return { width: w, height: h };
+    }
+    case "DECISION": {
+      const w = (node.width && node.width >= 150) ? node.width : s.DECISION.width;
+      const h = (node.height && node.height >= 80) ? node.height : s.DECISION.height;
+      return { width: w, height: h };
+    }
+    case "ACTION": {
+      const w = (node.width && node.width >= 200) ? node.width : s.ACTION.width;
+      const h = (node.height && node.height >= 80) ? node.height : s.ACTION.height;
+      return { width: w, height: h };
+    }
     case "RESOURCE":
-      return s.RESOURCE;
+      return { width: node.width || s.RESOURCE.width, height: node.height || s.RESOURCE.height };
     case "TOOL":
-      return s.TOOL;
+      return { width: node.width || s.TOOL.width, height: node.height || s.TOOL.height };
     case "WORKER":
-      return s.WORKER;
+      return { width: node.width || s.WORKER.width, height: node.height || s.WORKER.height };
     default:
       return s.TASK;
   }

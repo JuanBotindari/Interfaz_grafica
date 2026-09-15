@@ -3,7 +3,7 @@
 import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
-import { NODE_SIZES, NODE_TEXT, NODE_CLIPS, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { NODE_TEXT, NODE_CLIPS, getNodeScaleForZoom, getBaseNodeDimensions } from "@/config/nodeConfig";
 import { FileText } from "lucide-react";
 
 interface Props {
@@ -20,8 +20,7 @@ export default function ResourceNode({ node, isSelected, zoomScale = 1, isSemant
   const isSantander = theme === "santander";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
-  const width = NODE_SIZES.RESOURCE.width; // 112
-  const height = NODE_SIZES.RESOURCE.height; // 144
+  const { width, height } = getBaseNodeDimensions(node);
 
   const borderColor = isSantander ? "#9CA3AF" : "#00FF66";
   const foldColor = isSantander ? "#D1D5DB" : "#00FF66";

@@ -107,7 +107,16 @@ export default function NodeInspector() {
           </div>
           <select
             value={selectedNode.type}
-            onChange={(e) => handleChange("type", e.target.value as NodeType)}
+            onChange={(e) => {
+              const newType = e.target.value as NodeType;
+              // Limpiar width/height al cambiar de tipo para adoptar los
+              // tamaños por defecto de NODE_SIZES del nuevo tipo.
+              useGraphStore.getState().updateNode(selectedNode.id, {
+                type: newType,
+                width: undefined,
+                height: undefined,
+              });
+            }}
             style={selectStyle}
           >
             <option value="HUB">Nodo Central (HUB)</option>

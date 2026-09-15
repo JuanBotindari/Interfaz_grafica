@@ -3,7 +3,7 @@
 import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
-import { NODE_SIZES, NODE_TEXT, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { NODE_TEXT, getNodeScaleForZoom, getBaseNodeDimensions } from "@/config/nodeConfig";
 import { CheckSquare } from "lucide-react";
 
 interface Props {
@@ -20,8 +20,7 @@ export default function TaskNode({ node, isSelected, zoomScale = 1, isSemanticZo
   const isSantander = theme === "santander";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
-  const width = NODE_SIZES.TASK.width;
-  const height = NODE_SIZES.TASK.height;
+  const { width, height } = getBaseNodeDimensions(node);
 
   const borderColor = isSantander ? (isSelected ? "#EC0000" : "#D1D5DB") : "#00F0FF";
   const bgColor = isSantander ? "#FFFFFF" : "#0F172A";

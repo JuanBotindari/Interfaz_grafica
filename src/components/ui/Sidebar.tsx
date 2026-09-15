@@ -2,7 +2,7 @@
 
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { Brain, Bot, Wrench, Cpu, Boxes, Network, Link2, Trash2, Plus, GripVertical, CheckSquare, Diamond, GitBranch, Database, Zap, FileStack, FolderTree, Building2 } from "lucide-react";
+import { Brain, Bot, Wrench, Cpu, Boxes, Network, Link2, Trash2, Plus, GripVertical, CheckSquare, Diamond, GitBranch, Database, Zap, FileStack, FolderTree, Building2, Workflow } from "lucide-react";
 import { NodeType } from "@/types";
 
 interface NodeOption {
@@ -94,8 +94,8 @@ export default function Sidebar() {
       type: "PROCESS",
       name: "Nuevo Proceso",
       label: "Proceso",
-      description: "Contenedor principal de proceso",
-      icon: FolderTree,
+      description: "Etapa o flujo de proceso de negocio",
+      icon: Workflow,
       color: isSantander ? "#EC0000" : "#a855f7",
     },
     {

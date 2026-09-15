@@ -25,6 +25,7 @@ import AreaNodeView from "@/components/nodes/AreaNodeView";
 import DepartmentNodeView from "@/components/nodes/DepartmentNodeView";
 import { TextCardView } from "@/components/nodes/TextCardView";
 import { GroupNodeView } from "@/components/nodes/GroupNodeView";
+import ProcessNode from "@/components/nodes/ProcessNode";
 import TaskNode from "@/components/nodes/TaskNode";
 import DecisionNode from "@/components/nodes/DecisionNode";
 import SubprocessNode from "@/components/nodes/SubprocessNode";
@@ -463,8 +464,10 @@ export default function AgentCanvas() {
 
     switch (node.type as string) {
       case "GROUP":
-      case "PROCESS":
         nodeEl = <GroupNodeView key={node.id} {...props} />;
+        break;
+      case "PROCESS":
+        nodeEl = <ProcessNode key={node.id} {...props} />;
         break;
       case "HUB":
         nodeEl = <CircleNodeView key={node.id} {...props} />;

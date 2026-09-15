@@ -70,14 +70,14 @@ export default function DepartmentNodeView({
       {/* Pestaña de cabecera */}
       <div
         style={{
-          width: "200px",
+          width: "230px",
           height: "48px",
           background: tabBg,
           color: "#FFFFFF",
           borderTopLeftRadius: "8px",
           borderTopRightRadius: "8px",
           padding: "0 10px",
-          fontSize: "20px",
+          fontSize: "25px",
           fontWeight: 800,
           display: "flex",
           alignItems: "center",
@@ -143,7 +143,7 @@ export default function DepartmentNodeView({
         {node.role && (
           <span
             style={{
-              fontSize: "10px",
+              fontSize: `${NODE_TEXT.DEPARTMENT.subtitle || 10}px`,
               fontWeight: 500,
               color: isSantander ? "#6B7280" : "#94A3B8",
               overflow: "hidden",

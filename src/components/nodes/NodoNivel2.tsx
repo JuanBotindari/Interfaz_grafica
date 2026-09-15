@@ -4,7 +4,7 @@ import { CustomNode } from "@/types";
 import NodeHandle from "./NodeHandle";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
-import { NODE_SIZES, NODE_TEXT, NODE_CLIPS, getNodeScaleForZoom } from "@/config/nodeConfig";
+import { NODE_TEXT, NODE_CLIPS, getNodeScaleForZoom, getBaseNodeDimensions } from "@/config/nodeConfig";
 import { Network, Layers } from "lucide-react";
 
 interface Props {
@@ -22,8 +22,7 @@ export default function NodoNivel2({ node, isSelected, zoomScale = 1, isSemantic
   const isSantander = theme === "santander";
 
   const scaleFactor = getNodeScaleForZoom(node.type, zoomScale, isSemanticZoomActive);
-  const width = NODE_SIZES.HUB2.width;
-  const height = NODE_SIZES.HUB2.height;
+  const { width, height } = getBaseNodeDimensions(node);
   const fontSize = NODE_TEXT.HUB2.title;
 
   const borderColor = isSantander ? "#EC0000" : "#FF007F";
