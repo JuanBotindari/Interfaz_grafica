@@ -1,5 +1,5 @@
 export type NodeType = "HUB" | "AGENT" | "TOOL" | "WORKER";
-export type NodeStatus = "Active" | "Idle" | "Syncing" | "Error";
+export type NodeStatus = "Active" | "On-hold" | "Syncing" | "Error";
 
 export abstract class BaseNode {
   id: string;

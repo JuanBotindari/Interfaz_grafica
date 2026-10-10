@@ -46,7 +46,7 @@ export default function Sidebar() {
       name,
       role: "Sin definir",
       type,
-      status: "Idle" as const,
+      status: "On-hold" as const,
       x: 300,
       y: 200,
       ...(type === "GROUP" ? { width: 400, height: 250 } : {}),

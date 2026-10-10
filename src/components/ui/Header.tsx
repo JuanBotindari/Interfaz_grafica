@@ -1,6 +1,7 @@
 "use client";
 
 import { Activity, ShieldAlert, Cpu } from "lucide-react";
+import HeaderControls from "@/components/ui/HeaderControls";
 
 export function Header() {
   return (
@@ -11,6 +12,7 @@ export function Header() {
           JUAN BOTINDARI // COMMAND CENTER
         </span>
       </div>
+      <div className="flex-1 flex justify-center"><HeaderControls /></div>
 
       <div className="flex items-center gap-6 font-mono text-[10px]">
         <div className="flex items-center gap-2 text-emerald-400">

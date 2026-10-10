@@ -505,7 +505,7 @@
       "name": "OMNICANAL",
       "role": "Sin definir",
       "type": "TOOL",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 1345.2210805647937,
       "y": -476.6666666666666
     },
@@ -514,7 +514,7 @@
       "name": "Preproduccion",
       "role": "Sin definir",
       "type": "ACTION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 1175.3333333333333,
       "y": -465.99999999999994
     },
@@ -523,7 +523,7 @@
       "name": "Informacion Correcta",
       "role": "Sin definir",
       "type": "DECISION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 1236.1700105033688,
       "y": -378.95226813199224
     },
@@ -532,7 +532,7 @@
       "name": "Informacion Incorrecta",
       "role": "Sin definir",
       "type": "DECISION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 1416.924047562433,
       "y": -378.95226813199224
     },
@@ -541,7 +541,7 @@
       "name": "Informacion Incorrecta",
       "role": "Sin definir",
       "type": "DECISION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 1665.9410175078838,
       "y": -378.95226813199224
     },
@@ -550,7 +550,7 @@
       "name": "Informacion Correcta",
       "role": "Sin definir",
       "type": "DECISION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 1820.277167115083,
       "y": -378.95226813199224
     },
@@ -559,7 +559,7 @@
       "name": "Produccion",
       "role": "Sin definir",
       "type": "ACTION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 1728.9079628287739,
       "y": -224.75731249576165
     },
@@ -568,7 +568,7 @@
       "name": "Recurrentes",
       "role": "Sin definir",
       "type": "SUBPROCESS",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2218.6721977650204,
       "y": -1031.1148514121999
     },
@@ -577,7 +577,7 @@
       "name": "Incidencias puntuales",
       "role": "Sin definir",
       "type": "SUBPROCESS",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2686.028382187029,
       "y": -1031.1148514121999
     },
@@ -586,7 +586,7 @@
       "name": "Carga de CSV en un solo fichero",
       "role": "Sin definir",
       "type": "ACTION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2218.6721977650204,
       "y": -632.8926291899777
     },
@@ -595,7 +595,7 @@
       "name": "Deposito del fichero en una unidad",
       "role": "Sin definir",
       "type": "ACTION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2218.6721977650204,
       "y": -542.2219101331617
     },
@@ -604,7 +604,7 @@
       "name": "Al otro dia se recogen los PDFs",
       "role": "Sin definir",
       "type": "TASK",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2249.7833088761317,
       "y": -425.7815180788664
     },
@@ -613,7 +613,7 @@
       "name": "Produccion",
       "role": "Sin definir",
       "type": "ACTION",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2225.3160133430115,
       "y": -224.75731249576165
     },
@@ -622,7 +622,7 @@
       "name": "Extornos",
       "role": "Sin definir",
       "type": "SUBPROCESS",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2582.329693840378,
       "y": -883.4524004791899
     },
@@ -631,7 +631,7 @@
       "name": "Regularizaciones",
       "role": "Sin definir",
       "type": "SUBPROCESS",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2850.3296938403773,
       "y": -883.4524004791899
     },
@@ -640,7 +640,7 @@
       "name": "Hipotecario",
       "role": "Sin definir",
       "type": "DEPARTMENT",
-      "status": "Idle",
+      "status": "On-hold",
       "x": -160,
       "y": -4700
     },
@@ -649,7 +649,7 @@
       "name": "Retail",
       "role": "Sin definir",
       "type": "HUB",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2600,
       "y": -5260
     },
@@ -658,7 +658,7 @@
       "name": "Seguros",
       "role": "Sin definir",
       "type": "DEPARTMENT",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 740,
       "y": -3100
     },
@@ -667,7 +667,7 @@
       "name": "Pagos y Cobros",
       "role": "Sin definir",
       "type": "DEPARTMENT",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 4600,
       "y": -3040
     },
@@ -676,7 +676,7 @@
       "name": "Inversiones",
       "role": "Sin definir",
       "type": "DEPARTMENT",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 5420,
       "y": -4740
     },
@@ -685,7 +685,7 @@
       "name": "Agente Seleccion de Riesgo",
       "role": "Sin definir",
       "type": "AGENT",
-      "status": "Idle",
+      "status": "On-hold",
       "x": -1440,
       "y": -1440
     },
@@ -694,7 +694,7 @@
       "name": "Agente Soporte y Comunicaciones",
       "role": "Sin definir",
       "type": "AGENT",
-      "status": "Idle",
+      "status": "On-hold",
       "x": 2079.1400315820083,
       "y": -2335.7030372434147
     }

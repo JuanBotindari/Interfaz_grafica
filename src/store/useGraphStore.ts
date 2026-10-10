@@ -22,6 +22,8 @@ interface GraphState {
   isSimulating: boolean;
   editorMode: "view" | "edit";
   currentFileHandle: FileSystemFileHandle | null;
+  drilledNodeId: string | null;
+  activeDetailNodeId: string | null;
 
   // Historial
   past: HistorySnapshot[];
@@ -65,6 +67,12 @@ interface GraphState {
   recordSnapshot: () => void;
   undo: () => void;
   redo: () => void;
+
+  // Navegación jerárquica / Drill-down
+  enterDrillDown: (nodeId: string) => void;
+  exitDrillDown: () => void;
+  openNodeDetails: (nodeId: string) => void;
+  closeNodeDetails: () => void;
 }
 
 const MAX_HISTORY = 25;
@@ -82,6 +90,8 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   isConnecting: false,
   isSimulating: false,
   editorMode: "view",
+  drilledNodeId: null,
+  activeDetailNodeId: null,
 
   past: [],
   future: [],
@@ -441,7 +451,36 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       selectedNodeIds: [],
       selectedConnectionId: null,
       currentFileHandle: null,
+      drilledNodeId: null,
+      activeDetailNodeId: null,
     });
     saveGraph(nodes);
+  },
+
+  enterDrillDown: (nodeId: string) => {
+    set({
+      drilledNodeId: nodeId,
+      selectedNodeIds: [nodeId],
+      activeDetailNodeId: nodeId,
+    });
+  },
+
+  exitDrillDown: () => {
+    set({
+      drilledNodeId: null,
+    });
+  },
+
+  openNodeDetails: (nodeId: string) => {
+    set({
+      activeDetailNodeId: nodeId,
+      selectedNodeIds: [nodeId],
+    });
+  },
+
+  closeNodeDetails: () => {
+    set({
+      activeDetailNodeId: null,
+    });
   },
 }));

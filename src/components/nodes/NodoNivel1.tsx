@@ -41,7 +41,7 @@ export default function NodoNivel1({ node, isSelected, zoomScale = 1, isSemantic
         backgroundColor: themeConfig.nodes.bg,
         border: isSelected ? themeConfig.nodes.borderSelected : themeConfig.nodes.border,
         borderRadius: themeConfig.nodes.borderRadius,
-        padding: "12px",
+        padding: "8px 10px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",

@@ -66,7 +66,7 @@ const INITIAL_NODES: CustomNode[] = [
   { id: "node-group-1", name: "Módulo Santander AI", role: "Zona de procesamiento", type: "GROUP" as any, status: "Active", x: 100, y: 100, width: 680, height: 420 },
   { id: "node-hub", name: "CORE BRAIN HUB", role: "Central Core", type: "HUB", department: "TECH", status: "Active", latency: "1ms", x: 400, y: 350, model: "GPT-4o", systemPrompt: "Eres el orquestador principal del sistema." },
   { id: "node-1", name: "Data Agent", role: "Vector Querying", type: "AGENT", department: "TECH", status: "Active", latency: "12ms", x: 180, y: 180, parentId: "node-hub", model: "Claude 3.5 Sonnet" },
-  { id: "node-2", name: "Markdown Auditor", role: "Content Validation", type: "AGENT", department: "TECH", status: "Idle", latency: "45ms", x: 600, y: 180, parentId: "node-hub", model: "Local Ollama" },
+  { id: "node-2", name: "Markdown Auditor", role: "Content Validation", type: "AGENT", department: "TECH", status: "On-hold", latency: "45ms", x: 600, y: 180, parentId: "node-hub", model: "Local Ollama" },
 ];
 
 const MAX_HISTORY = 25;

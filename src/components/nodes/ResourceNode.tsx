@@ -72,11 +72,11 @@ export default function ResourceNode({ node, isSelected, zoomScale = 1, isSemant
             clipPath,
             backgroundColor: bgColor,
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
-            gap: "8px",
-            padding: "12px 8px",
+            justifyContent: "flex-start",
+            gap: "6px",
+            padding: "4px 10px 4px 8px",
             position: "relative",
           }}
         >
@@ -86,25 +86,25 @@ export default function ResourceNode({ node, isSelected, zoomScale = 1, isSemant
               position: "absolute",
               top: 0,
               right: 0,
-              width: "14px",
-              height: "14px",
+              width: "10px",
+              height: "10px",
               backgroundColor: foldColor,
               clipPath: "polygon(0 0, 0 100%, 100% 100%)",
             }}
           />
 
-          <FileText size={22} color={isSantander ? "#EC0000" : "#00FF66"} />
+          <FileText size={15} color={isSantander ? "#EC0000" : "#00FF66"} style={{ flexShrink: 0 }} />
           <span
             style={{
               fontSize: `${NODE_TEXT.RESOURCE.title}px`,
               fontWeight: 700,
               color: textColor,
-              textAlign: "center",
-              lineHeight: 1.2,
+              textAlign: "left",
+              lineHeight: 1.15,
               overflow: "hidden",
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "100%",
             } as React.CSSProperties}
           >
             {node.name}

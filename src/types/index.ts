@@ -13,7 +13,7 @@ export interface CustomNode {
   type: NodeType;
   department?: string;
   description?: string;
-  status?: "Active" | "Idle" | "Error";
+  status?: "Active" | "On-hold" | "Error";
   latency?: string;
   x: number;
   y: number;
@@ -22,6 +22,7 @@ export interface CustomNode {
   parentId?: string;
   model?: AIModel;
   systemPrompt?: string;
+  noxusUrl?: string;
 }
 
 export interface Connection {

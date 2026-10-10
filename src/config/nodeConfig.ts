@@ -78,21 +78,17 @@ export interface NodeVisualBounds {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. NIVELES DE ZOOM DEL CANVAS
-//    Factor de escala global. Valores más bajos = vista más alejada.
+//    Solo 2 niveles en canvas. El nivel 3 (vista interna) se maneja via drill-down.
 // ─────────────────────────────────────────────────────────────────────────────
-export type ZoomLevelKey = "L1" | "L2" | "L3" | "L4";
+export type ZoomLevelKey = "L1" | "L2";
 
-export const ZOOM_LEVEL_KEYS: ZoomLevelKey[] = ["L1", "L2", "L3", "L4"];
+export const ZOOM_LEVEL_KEYS: ZoomLevelKey[] = ["L1", "L2"];
 
 export const ZOOM_LEVELS: Record<ZoomLevelKey, number> = {
-  /** L1 — Organización: Santander + departamentos */
+  /** L1 — Organización: HUB + departamentos */
   L1: 0.2,
-  /** L2 — Departamento: depto foco + áreas */
+  /** L2 — Departamento: departamentos + áreas + sub-áreas */
   L2: 0.6,
-  /** L3 — Área: área foco + procesos / subnodos */
-  L3: 1.5,
-  /** L4 — Detalle: agentes, tareas, operativa */
-  L4: 1.875,
 };
 
 /** Lista ordenada usada por la rueda del mouse y los botones +/- */
@@ -102,7 +98,7 @@ export const DISCRETE_ZOOM_LEVELS = ZOOM_LEVEL_KEYS.map((k) => ZOOM_LEVELS[k]);
 // 2. COMPORTAMIENTO GENERAL DEL ZOOM SEMÁNTICO
 // ─────────────────────────────────────────────────────────────────────────────
 export const SEMANTIC_ZOOM = {
-  /** Interpola suavemente visibilidad y tamaño entre L1↔L2↔L3↔L4 */
+  /** Interpola suavemente visibilidad y tamaño entre L1↔L2 */
   INTERPOLATE_BETWEEN_LEVELS: true,
   /** Por debajo de esta opacidad el nodo no se renderiza */
   HIDE_BELOW_OPACITY: 0.02,
@@ -138,6 +134,83 @@ export const NODE_TIERS: Record<NodeType, 1 | 2 | 3> = {
   NOTE          : 3,
 };
 
+/**
+ * Jerarquía estricta de niveles para vistas internas y drill-down:
+ * 1: Núcleo Central (HUB)
+ * 2: Departamentos
+ * 3: Áreas
+ * 4: Sub-áreas, Procesos, Grupos
+ * 5: Operativa (Tareas, Agentes, Herramientas, etc.)
+ */
+export const HIERARCHY_RANK: Record<NodeType, number> = {
+  HUB           : 1,
+  DEPARTMENT    : 2,
+  AREA          : 3,
+  HUB2          : 4,
+  PROCESS       : 5,
+  GROUP         : 5,
+  SUBPROCESS    : 6,
+  AGENT         : 7,
+  TASK          : 7,
+  DECISION      : 7,
+  KNOWLEDGE_BASE: 7,
+  ACTION        : 7,
+  RESOURCE      : 7,
+  TOOL          : 7,
+  WORKER        : 7,
+  NOTE          : 7,
+};
+
+/**
+ * Obtiene los IDs de los nodos internos pertenecientes al árbol de un nodo padre.
+ * Solo incluye nodos hijos que tengan un rango jerárquico estrictamente menor (rank mayor).
+ */
+export function getInternalNodeIds(
+  parent: CustomNode,
+  allNodes: CustomNode[],
+  connections: { source: string; target: string }[]
+): Set<string> {
+  const ids = new Set<string>();
+  const parentRank = HIERARCHY_RANK[parent.type] ?? 1;
+
+  allNodes.forEach((n) => {
+    if (n.parentId === parent.id) ids.add(n.id);
+  });
+
+  const queue = [parent.id];
+  const visited = new Set<string>([parent.id]);
+
+  while (queue.length > 0) {
+    const currId = queue.shift()!;
+    connections.forEach((c) => {
+      if (c.source === currId && !visited.has(c.target)) {
+        const targetNode = allNodes.find((n) => n.id === c.target);
+        if (targetNode && targetNode.id !== parent.id) {
+          const targetRank = HIERARCHY_RANK[targetNode.type] ?? 7;
+          if (targetRank > parentRank) {
+            visited.add(c.target);
+            ids.add(c.target);
+            queue.push(c.target);
+          }
+        }
+      }
+      if (currId !== parent.id && c.target === currId && !visited.has(c.source)) {
+        const sourceNode = allNodes.find((n) => n.id === c.source);
+        if (sourceNode && sourceNode.id !== parent.id) {
+          const sourceRank = HIERARCHY_RANK[sourceNode.type] ?? 7;
+          if (sourceRank > parentRank) {
+            visited.add(c.source);
+            ids.add(c.source);
+            queue.push(c.source);
+          }
+        }
+      }
+    });
+  }
+
+  return ids;
+}
+
 /** Escala del canvas al hacer clic en un nodo (modo vista) según su tier */
 export const CLICK_ZOOM = {
   TIER_1: 0.75,
@@ -155,21 +228,22 @@ export const NODE_SIZES = {
   AREA          : { width: 288, height: 192 },
   HUB2          : { width: 270, height: 250 },
   GROUP         : { width: 400, height: 250 },
-  PROCESS       : { width: 300, height: 120 },
-  SUBPROCESS    : { width: 300, height: 64 },
-  AGENT         : { width: 300, height: 150 },
-  KNOWLEDGE_BASE: { width: 300, height: 100 },
-  TASK          : { width: 240, height: 100 },
-  DECISION      : { width: 240, height: 190 },
-  ACTION        : { width: 300, height: 100 },
-  RESOURCE      : { width: 250, height: 120 },
-  TOOL          : { width: 250, height: 120 },
-  WORKER        : { width: 250, height:  120 },
-  NOTE          : { width: 160, height: 160 },
+  PROCESS       : { width: 140, height: 80 },
+  SUBPROCESS    : { width: 145, height: 46 },
+  AGENT         : { width: 130, height: 80 },
+  KNOWLEDGE_BASE: { width: 155, height: 72 },
+  TASK          : { width: 120, height: 40 },
+  DECISION      : { width: 120, height: 65 },
+  ACTION        : { width: 125, height: 45 },
+  RESOURCE      : { width: 125, height: 45 },
+  TOOL          : { width: 125, height: 45 },
+  WORKER        : { width: 125, height: 45 },
+  NOTE          : { width: 115, height: 100 },
 } as const;
 
 export const NODE_CLIPS = {
   OCTAGON: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+  SEMI_OCTAGON_TOP_FLAT: "polygon(0 0, 100% 0, 100% 70%, 70% 100%, 30% 100%, 0 70%)",
   HEXAGON: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)",
   FOLDED_CORNER: "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)",
   CHAMFERED: "polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px)",
@@ -177,32 +251,33 @@ export const NODE_CLIPS = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 5. VISIBILIDAD POR NIVEL DE ZOOM
-//    Opacidad 0–1 para cada tipo de nodo en L1, L2, L3 y L4.
+//    Opacidad 0–1. Solo L1 y L2 en canvas. Nodos internos (Tier 2-3) solo
+//    se muestran en la vista interna (drill-down, nivel 3).
 // ─────────────────────────────────────────────────────────────────────────────
 type VisibilityMap = Record<ZoomLevelKey, number>;
 
 export const NODE_VISIBILITY: Record<NodeType, VisibilityMap> = {
-  // ── Estructura (Tier 1) ──
-  HUB           : { L1: 1.0, L2: 0.0, L3: 0.0, L4: 0.0 },
-  DEPARTMENT    : { L1: 1.0, L2: 1.0,  L3: 0.35, L4: 0.15 },
-  AREA          : { L1: 0.0, L2: 1.0,  L3: 0.5,  L4: 0.2 },
+  // ── L1: HUB + DEPARTMENT ──
+  HUB           : { L1: 1.0,  L2: 0.25 },
+  DEPARTMENT    : { L1: 1.0,  L2: 1.0  },
+  AREA          : { L1: 0.0,  L2: 1.0  },
 
-  // ── Procesos / Sub-áreas (Tier 2) ──
-  HUB2          : { L1: 0.0, L2: 0.85, L3: 1.0,  L4: 0.35 },
-  PROCESS       : { L1: 0.0, L2: 0.8,  L3: 1.0,  L4: 1.00 },
-  GROUP         : { L1: 0.0, L2: 0.8,  L3: 1.0,  L4: 1.00 },
-  SUBPROCESS    : { L1: 0.0, L2: 0.75, L3: 1.0,  L4: 1.00 },
+  // ── L2: sub-áreas ──
+  HUB2          : { L1: 0.0,  L2: 0.85 },
 
-  // ── Operativa (Tier 3) ──
-  AGENT         : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
-  TASK          : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
-  DECISION      : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
-  KNOWLEDGE_BASE: { L1: 0.0, L2: 0.0,  L3: 1.0,  L4: 1.0 },
-  ACTION        : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
-  RESOURCE      : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
-  TOOL          : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
-  WORKER        : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
-  NOTE          : { L1: 0.0, L2: 0.0,  L3: 0.7,  L4: 1.0 },
+  // ── Invisibles en canvas (solo drill-down) ──
+  PROCESS       : { L1: 0.0,  L2: 0.0 },
+  GROUP         : { L1: 0.0,  L2: 0.0 },
+  SUBPROCESS    : { L1: 0.0,  L2: 0.0 },
+  AGENT         : { L1: 0.0,  L2: 0.0 },
+  TASK          : { L1: 0.0,  L2: 0.0 },
+  DECISION      : { L1: 0.0,  L2: 0.0 },
+  KNOWLEDGE_BASE: { L1: 0.0,  L2: 0.0 },
+  ACTION        : { L1: 0.0,  L2: 0.0 },
+  RESOURCE      : { L1: 0.0,  L2: 0.0 },
+  TOOL          : { L1: 0.0,  L2: 0.0 },
+  WORKER        : { L1: 0.0,  L2: 0.0 },
+  NOTE          : { L1: 0.0,  L2: 0.0 },
 };
 
 
@@ -211,36 +286,35 @@ export const NODE_VISIBILITY: Record<NodeType, VisibilityMap> = {
 //
 //    Tamaño en pantalla = NODE_SIZES × valor de esta tabla (con cámara compensada).
 //
-//    Jerarquía visual sugerida:
+//    Jerarquía visual:
 //      L1 → HUB grande, deptos medianos
-//      L2 → depto grande, HUB mini, áreas medianas
-//      L3 → área grande, estructura mini, procesos normales
-//      L4 → operativa a tamaño completo, resto mini
+//      L2 → depto grande, HUB mini, áreas + sub-áreas medianas
+//    Nodos internos solo se renderizan en drill-down (escala forzada).
 // ─────────────────────────────────────────────────────────────────────────────
 type ScaleMap = Record<ZoomLevelKey, number>;
 
 export const NODE_SCALE: Record<NodeType, ScaleMap> = {
-  // ── Estructura (cambian mucho entre niveles) ──
-  HUB:            { L1: 1.0,  L2: 0.35, L3: 0.25, L4: 0.2  },
-  DEPARTMENT:     { L1: 0.6,  L2: 1.0,  L3: 0.35, L4: 0.25 },
-  AREA:           { L1: 0.0,  L2: 0.8, L3: 1.0,  L4: 0.4  },
+  // ── Estructura ──
+  HUB:            { L1: 1.0,  L2: 0.35 },
+  DEPARTMENT:     { L1: 0.6,  L2: 1.0  },
+  AREA:           { L1: 0.0,  L2: 0.8  },
 
-  // ── Procesos (aparecen y crecen en L2–L3) ──
-  HUB2:           { L1: 0.0,  L2: 0.75, L3: 0.9,  L4: 0.45 },
-  PROCESS:        { L1: 0.0,  L2: 0.75, L3: 1.0,  L4: 1.00  },
-  GROUP:          { L1: 0.0,  L2: 0.75, L3: 1.0,  L4: 1.00  },
-  SUBPROCESS:     { L1: 0.0,  L2: 0.7,  L3: 0.95, L4: 1.00  },
+  // ── Sub-áreas ──
+  HUB2:           { L1: 0.0,  L2: 0.75 },
 
-  // ── Operativa (tamaño completo solo en L3–L4) ──
-  AGENT:          { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
-  TASK:           { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
-  DECISION:       { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
-  KNOWLEDGE_BASE: { L1: 0.0, L2: 0.0, L3: 1.00, L4: 1.0 },
-  ACTION:         { L1: 0.0, L2: 0.0, L3: 1.00, L4: 1.0 },
-  RESOURCE:       { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
-  TOOL:           { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
-  WORKER:         { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
-  NOTE:           { L1: 0.0, L2: 0.0, L3: 0.85, L4: 1.0 },
+  // ── Invisibles en canvas (solo drill-down) ──
+  PROCESS:        { L1: 0.0,  L2: 0.0 },
+  GROUP:          { L1: 0.0,  L2: 0.0 },
+  SUBPROCESS:     { L1: 0.0,  L2: 0.0 },
+  AGENT:          { L1: 0.0,  L2: 0.0 },
+  TASK:           { L1: 0.0,  L2: 0.0 },
+  DECISION:       { L1: 0.0,  L2: 0.0 },
+  KNOWLEDGE_BASE: { L1: 0.0,  L2: 0.0 },
+  ACTION:         { L1: 0.0,  L2: 0.0 },
+  RESOURCE:       { L1: 0.0,  L2: 0.0 },
+  TOOL:           { L1: 0.0,  L2: 0.0 },
+  WORKER:         { L1: 0.0,  L2: 0.0 },
+  NOTE:           { L1: 0.0,  L2: 0.0 },
 };
 
 /**
@@ -258,17 +332,17 @@ export const NODE_TEXT = {
   AREA          : { title: 30, subtitle: 10, meta:  9 },
   HUB2          : { title: 25, subtitle: 14, meta: 12 },
   GROUP         : { title: 13, subtitle: 11, meta: 10 },
-  PROCESS       : { title: 25, subtitle: 11, meta: 10 },
-  SUBPROCESS    : { title: 20, subtitle:  9, meta:  8 },
-  AGENT         : { title: 25, subtitle: 22, meta: 25 },
-  KNOWLEDGE_BASE: { title: 25, subtitle: 20, meta: 20 },
-  TASK          : { title: 22, subtitle: 10, meta:  9 },
-  DECISION      : { title: 22, subtitle:  8, meta:  8 },
-  ACTION        : { title: 25, subtitle: 18, meta:  8 },
-  RESOURCE      : { title: 25, subtitle:  8, meta:  8 },
-  TOOL          : { title: 25, subtitle:  8, meta:  8 },
-  WORKER        : { title:  8, subtitle:  7, meta:  7 },
-  NOTE          : { title: 11, subtitle:  9, meta:  8 },
+  PROCESS       : { title: 12, subtitle:  9, meta:  8 },
+  SUBPROCESS    : { title: 11, subtitle:  8, meta:  7 },
+  AGENT         : { title: 12, subtitle: 10, meta:  9 },
+  KNOWLEDGE_BASE: { title: 11, subtitle:  9, meta:  8 },
+  TASK          : { title: 11, subtitle:  9, meta:  8 },
+  DECISION      : { title: 11, subtitle:  9, meta:  8 },
+  ACTION        : { title: 11, subtitle:  9, meta:  8 },
+  RESOURCE      : { title: 11, subtitle:  9, meta:  8 },
+  TOOL          : { title: 11, subtitle:  9, meta:  8 },
+  WORKER        : { title: 11, subtitle:  9, meta:  8 },
+  NOTE          : { title: 10, subtitle:  8, meta:  7 },
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -285,8 +359,8 @@ function interpolateMatrixValue(
 
   const scales = ZOOM_LEVEL_KEYS.map((k) => ZOOM_LEVELS[k]);
 
-  if (canvasScale <= scales[0]) return row.L1;
-  if (canvasScale >= scales[scales.length - 1]) return row.L4;
+  if (canvasScale <= scales[0]) return row[ZOOM_LEVEL_KEYS[0]];
+  if (canvasScale >= scales[scales.length - 1]) return row[ZOOM_LEVEL_KEYS[ZOOM_LEVEL_KEYS.length - 1]];
 
   for (let i = 0; i < scales.length - 1; i++) {
     const lo = scales[i];
@@ -330,7 +404,7 @@ function matrixValue(
   return discreteMatrixValue(matrix, nodeType, canvasScale);
 }
 
-/** Índice 0–3 del nivel de zoom más cercano a la escala actual */
+/** Índice 0–1 del nivel de zoom más cercano a la escala actual */
 export function getClosestZoomLevelIndex(canvasScale: number): number {
   let bestIdx = 0;
   let minDiff = Infinity;
@@ -344,7 +418,7 @@ export function getClosestZoomLevelIndex(canvasScale: number): number {
   return bestIdx;
 }
 
-/** Clave L1–L4 del nivel de zoom más cercano */
+/** Clave L1–L2 del nivel de zoom más cercano */
 export function getClosestZoomLevelKey(canvasScale: number): ZoomLevelKey {
   return ZOOM_LEVEL_KEYS[getClosestZoomLevelIndex(canvasScale)];
 }
@@ -369,7 +443,7 @@ export function getNodeScaleForZoom(
   canvasScale: number,
   isSemanticZoomActive = true
 ): number {
-  if (!isSemanticZoomActive) return 1;
+  if (!isSemanticZoomActive) return typeof canvasScale === "number" ? canvasScale : 1;
 
   const desiredScreenScale = matrixValue(NODE_SCALE, nodeType, canvasScale);
   if (desiredScreenScale <= 0) return 0;
@@ -416,62 +490,32 @@ export function getBaseNodeDimensions(node: CustomNode): { width: number; height
       return s.DEPARTMENT;
     case "AREA":
       return s.AREA;
-    case "HUB2": {
-      // Los HUB2 del preset tienen dimensiones antiguas pequeñas (ej. 160×60).
-      // Solo respetar overrides si son dimensiones razonables para un HUB2.
-      const w = (node.width && node.width >= 200) ? node.width : s.HUB2.width;
-      const h = (node.height && node.height >= 150) ? node.height : s.HUB2.height;
-      return { width: w, height: h };
-    }
+    case "HUB2":
+      return s.HUB2;
     case "GROUP":
       return { width: node.width || s.GROUP.width, height: node.height || s.GROUP.height };
-    case "PROCESS": {
-      // Solo respetar overrides si son dimensiones razonables para un PROCESS.
-      // Valores pequeños son herencia de conversiones desde SUBPROCESS u otros tipos compactos.
-      const w = (node.width && node.width >= 200) ? node.width : s.PROCESS.width;
-      const h = (node.height && node.height >= 80) ? node.height : s.PROCESS.height;
-      return { width: w, height: h };
-    }
-    case "SUBPROCESS": {
-      // Los SUBPROCESS del preset tienen dimensiones antiguas pequeñas (ej. 110–160×50).
-      // Solo respetar overrides si son dimensiones razonables para el nuevo tamaño.
-      const w = (node.width && node.width >= 200) ? node.width : s.SUBPROCESS.width;
-      const h = (node.height && node.height >= 55) ? node.height : s.SUBPROCESS.height;
-      return { width: w, height: h };
-    }
-    case "AGENT": {
-      const w = (node.width && node.width >= 200) ? node.width : s.AGENT.width;
-      const h = (node.height && node.height >= 100) ? node.height : s.AGENT.height;
-      return { width: w, height: h };
-    }
-    case "KNOWLEDGE_BASE": {
-      const w = (node.width && node.width >= 200) ? node.width : s.KNOWLEDGE_BASE.width;
-      const h = (node.height && node.height >= 80) ? node.height : s.KNOWLEDGE_BASE.height;
-      return { width: w, height: h };
-    }
+    case "PROCESS":
+      return s.PROCESS;
+    case "SUBPROCESS":
+      return s.SUBPROCESS;
+    case "AGENT":
+      return s.AGENT;
+    case "KNOWLEDGE_BASE":
+      return s.KNOWLEDGE_BASE;
     case "NOTE":
       return { width: node.width || s.NOTE.width, height: node.height || s.NOTE.height };
-    case "TASK": {
-      const w = (node.width && node.width >= 200) ? node.width : s.TASK.width;
-      const h = (node.height && node.height >= 80) ? node.height : s.TASK.height;
-      return { width: w, height: h };
-    }
-    case "DECISION": {
-      const w = (node.width && node.width >= 150) ? node.width : s.DECISION.width;
-      const h = (node.height && node.height >= 80) ? node.height : s.DECISION.height;
-      return { width: w, height: h };
-    }
-    case "ACTION": {
-      const w = (node.width && node.width >= 200) ? node.width : s.ACTION.width;
-      const h = (node.height && node.height >= 80) ? node.height : s.ACTION.height;
-      return { width: w, height: h };
-    }
+    case "TASK":
+      return s.TASK;
+    case "DECISION":
+      return s.DECISION;
+    case "ACTION":
+      return s.ACTION;
     case "RESOURCE":
-      return { width: node.width || s.RESOURCE.width, height: node.height || s.RESOURCE.height };
+      return s.RESOURCE;
     case "TOOL":
-      return { width: node.width || s.TOOL.width, height: node.height || s.TOOL.height };
+      return s.TOOL;
     case "WORKER":
-      return { width: node.width || s.WORKER.width, height: node.height || s.WORKER.height };
+      return s.WORKER;
     default:
       return s.TASK;
   }

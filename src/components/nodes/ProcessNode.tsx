@@ -41,16 +41,18 @@ export default function ProcessNode({
     ? (isSelected ? "0 8px 24px rgba(236, 0, 0, 0.25)" : "0 4px 14px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)")
     : (isSelected ? "0 0 20px rgba(0, 240, 255, 0.4), inset 0 0 10px rgba(0, 240, 255, 0.15)" : "0 4px 20px rgba(0, 0, 0, 0.4)");
 
-  const accentColor = isSantander ? "#EC0000" : "#00F0FF";
-  const badgeBg = isSantander ? "rgba(236, 0, 0, 0.15)" : "rgba(0, 240, 255, 0.15)";
-  const badgeBorder = isSantander ? "rgba(236, 0, 0, 0.3)" : "rgba(0, 240, 255, 0.35)";
-  const badgeColor = isSantander ? "#EF4444" : "#38BDF8";
+  const accentColor = isSantander ? "#E11D48" : "#818CF8";
+  const badgeBg = "rgba(255, 255, 255, 0.1)";
+  const badgeBorder = "rgba(255, 255, 255, 0.2)";
+  const badgeColor = "#F1F5F9";
   const textColor = isSantander ? "#111827" : "#F8FAFC";
   const subtitleColor = isSantander ? "#6B7280" : "#94A3B8";
 
   // Indicador de estado
   const statusColor = node.status === "Active"
     ? (isSantander ? "#10B981" : "#00FF66")
+    : node.status === "On-hold"
+    ? "#F59E0B"
     : node.status === "Error"
     ? "#EF4444"
     : (isSantander ? "#9CA3AF" : "#64748B");
@@ -98,36 +100,30 @@ export default function ProcessNode({
           flexDirection: "column",
         }}
       >
-        {/* Cabecera compacta con Icono y Tag PROCESO */}
+        {/* Cabecera compacta con Icono y Tag Proceso */}
         <div
           style={{
-            height: `${Math.max(33, Math.min(36, Math.round(height * 0.22)))}px`,
-            minHeight: "33px",
+            height: "26px",
+            minHeight: "26px",
             background: headerBg,
-            padding: "0 10px",
+            padding: "0 8px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             borderBottom: isSantander ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid rgba(0, 240, 255, 0.2)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <Workflow size={Math.max(15, Math.min(18, Math.round(NODE_TEXT.PROCESS.title * 0.75)))} color={accentColor} style={{ flexShrink: 0 }} />
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <Workflow size={13} color={accentColor} style={{ flexShrink: 0 }} />
             <span
               style={{
-                fontSize: `${NODE_TEXT.PROCESS.meta || 14}px`,
-                fontWeight: 800,
-                padding: "2px 6px",
-                borderRadius: "4px",
-                backgroundColor: badgeBg,
-                border: `1px solid ${badgeBorder}`, 
+                fontSize: "11px",
+                fontWeight: 600,
                 color: badgeColor,
-                letterSpacing: "0.6px",
-                textTransform: "uppercase",
-                lineHeight: "1.2",
+                letterSpacing: "0.3px",
               }}
             >
-              PROCESO
+              Proceso
             </span>
           </div>
 
@@ -139,7 +135,7 @@ export default function ProcessNode({
               backgroundColor: statusColor,
               boxShadow: `0 0 5px ${statusColor}`,
             }}
-            title={`Estado: ${node.status || "Idle"}`}
+            title={`Estado: ${node.status || "On-hold"}`}
           />
         </div>
 

@@ -28,7 +28,7 @@ export default function NodoNivel2({ node, isSelected, zoomScale = 1, isSemantic
   const borderColor = isSantander ? "#EC0000" : "#FF007F";
   const bgColor = isSantander ? "#E5E7EB" : "#0A0F1D";
   const textColor = isSantander ? "#1F2937" : "#FFFFFF";
-  const clipPath = NODE_CLIPS.OCTAGON;
+  const clipPath = NODE_CLIPS.SEMI_OCTAGON_TOP_FLAT;
   const dropFilter = isSantander ? "drop-shadow(0 4px 6px rgba(0,0,0,0.1))" : "drop-shadow(0 0 8px #FF007F)";
 
   // Fondo de la etiqueta roja (coherente con Department y Area)
@@ -87,22 +87,22 @@ export default function NodoNivel2({ node, isSelected, zoomScale = 1, isSemantic
             position: "relative",
           }}
         >
-          {/* Etiqueta roja superior (dentro de la forma) */}
+          {/* Etiqueta roja superior (a ancho completo del top) */}
           <div
             style={{
               position: "absolute",
-              top: "0%",
-              left: "50%",
-              transform: "translateX(-50%)",
+              top: "0",
+              left: "0",
+              width: "100%",
               background: tabBg,
               color: "#FFFFFF",
-              padding: "3px 12px",
-              borderRadius: "6px",
-              fontSize: "28px",
+              padding: "1px 0",
+              fontSize: "27px",
               fontWeight: 800,
               letterSpacing: "1px",
               display: "flex",
               alignItems: "center",
+              justifyContent: "center",
               gap: "5px",
               boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
               zIndex: 2,

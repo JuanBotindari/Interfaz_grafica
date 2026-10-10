@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { CustomNode, ContextMenuState, NodeType, getNodeOpacity, NODE_TIERS, DISCRETE_ZOOM_LEVELS } from "@/types";
-import { getClickZoomForTier } from "@/config/nodeConfig";
+import { getClickZoomForTier, getInternalNodeIds, getBaseNodeDimensions } from "@/config/nodeConfig";
 import { useGraphStore } from "@/store/useGraphStore";
 import { getThemeConfig } from "@/config/themes";
+import { ArrowLeft } from "lucide-react";
 
 // Componentes UI
 import CanvasConnections from "./CanvasConnections";
 import ContextMenu from "@/components/ui/ContextMenu";
 import NodeInspector from "@/components/ui/NodeInspector";
 import CanvasControls from "@/components/ui/CanvasControls";
-import ExportImportPanel from "@/components/ui/ExportImportPanel";
 import Sidebar from "@/components/ui/Sidebar";
 import MiniMap from "@/components/ui/MiniMap";
 
@@ -54,6 +54,12 @@ export default function AgentCanvas() {
     saveToFile,
     addGroupNode,
     editorMode,
+    drilledNodeId,
+    enterDrillDown,
+    exitDrillDown,
+    openNodeDetails,
+    closeNodeDetails,
+    connections,
   } = useGraphStore();
 
   const themeConfig = getThemeConfig(theme);
@@ -79,10 +85,11 @@ export default function AgentCanvas() {
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [isSemanticZoomActive, setIsSemanticZoomActive] = useState(true);
 
-  // Animación Suave de Zoom (Lerp + requestAnimationFrame)
+  // Animación Suave de Zoom (Curva de transición fluida con requestAnimationFrame)
   const targetScaleRef = useRef<number>(DISCRETE_ZOOM_LEVELS[0]);
   const targetPosRef = useRef({ x: 0, y: 0 });
   const rafId = useRef<number | null>(null);
+  const prevDrilledRef = useRef<string | null>(null);
 
   const centerOnNodes = (s: number = targetScaleRef.current) => {
     const currentNodes = useGraphStore.getState().nodes;
@@ -93,10 +100,11 @@ export default function AgentCanvas() {
 
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     currentNodes.forEach((n) => {
+      const dims = getBaseNodeDimensions(n);
       if (n.x < minX) minX = n.x;
       if (n.y < minY) minY = n.y;
-      if (n.x + 180 > maxX) maxX = n.x + 180;
-      if (n.y + 120 > maxY) maxY = n.y + 120;
+      if (n.x + dims.width > maxX) maxX = n.x + dims.width;
+      if (n.y + dims.height > maxY) maxY = n.y + dims.height;
     });
 
     const centerX = (minX + maxX) / 2;
@@ -109,7 +117,7 @@ export default function AgentCanvas() {
     const targetX = viewWidth / 2 - centerX * s;
     const targetY = viewHeight / 2 - centerY * s;
 
-    animateZoom(s, { x: targetX, y: targetY });
+    animateZoom(s, { x: targetX, y: targetY }, 500);
   };
 
   useEffect(() => {
@@ -123,7 +131,8 @@ export default function AgentCanvas() {
   const getClosestZoomIndex = (currentScale: number): number => {
     let minDiff = Infinity;
     let bestIdx = 0;
-    DISCRETE_ZOOM_LEVELS.forEach((level, idx) => {
+    const levels = drilledNodeId ? [0.8, 1.0] : DISCRETE_ZOOM_LEVELS;
+    levels.forEach((level, idx) => {
       const diff = Math.abs(level - currentScale);
       if (diff < minDiff) {
         minDiff = diff;
@@ -133,7 +142,11 @@ export default function AgentCanvas() {
     return bestIdx;
   };
 
-  const animateZoom = (newScale: number, newPos: { x: number; y: number }) => {
+  const animateZoom = (
+    newScale: number,
+    newPos: { x: number; y: number },
+    duration = 450
+  ) => {
     targetScaleRef.current = newScale;
     targetPosRef.current = newPos;
 
@@ -142,32 +155,26 @@ export default function AgentCanvas() {
       rafId.current = null;
     }
 
-    const loop = () => {
-      let isDone = false;
+    const startScale = scale;
+    const startPos = { ...position };
+    const startTime = performance.now();
 
-      setViewport((prev) => {
-        const targetScale = targetScaleRef.current;
-        const targetPos = targetPosRef.current;
+    const loop = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease Out Cubic para animación súper suave y moderna
+      const ease = 1 - Math.pow(1 - progress, 3);
 
-        const nextScale = prev.scale + (targetScale - prev.scale) * 0.28;
-        const nextX = prev.position.x + (targetPos.x - prev.position.x) * 0.28;
-        const nextY = prev.position.y + (targetPos.y - prev.position.y) * 0.28;
+      const curScale = startScale + (newScale - startScale) * ease;
+      const curX = startPos.x + (newPos.x - startPos.x) * ease;
+      const curY = startPos.y + (newPos.y - startPos.y) * ease;
 
-        const scaleDone = Math.abs(targetScale - nextScale) < 0.001;
-        const posDone = Math.abs(targetPos.x - nextX) < 0.2 && Math.abs(targetPos.y - nextY) < 0.2;
-
-        if (scaleDone && posDone) {
-          isDone = true;
-          return { scale: targetScale, position: targetPos };
-        }
-
-        return {
-          scale: scaleDone ? targetScale : nextScale,
-          position: posDone ? targetPos : { x: nextX, y: nextY },
-        };
+      setViewport({
+        scale: curScale,
+        position: { x: curX, y: curY },
       });
 
-      if (!isDone) {
+      if (progress < 1) {
         rafId.current = requestAnimationFrame(loop);
       } else {
         rafId.current = null;
@@ -212,6 +219,9 @@ export default function AgentCanvas() {
 
       if (e.key === "Escape") {
         setContextMenu((prev) => ({ ...prev, visible: false }));
+        if (useGraphStore.getState().drilledNodeId) {
+          useGraphStore.getState().exitDrillDown();
+        }
       } else if (modifier && e.key.toLowerCase() === "s") {
         e.preventDefault();
         saveToFile();
@@ -232,6 +242,164 @@ export default function AgentCanvas() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [undo, redo, deleteSelectedNodes, deleteConnection, saveToFile, selectedNodeIds, selectedConnectionId]);
+
+  const [fixedParentPos, setFixedParentPos] = useState<{ x: number; y: number } | null>(null);
+
+  // Subárbol de nodos internos para drill-down
+  const { internalNodeIds, parentDrilledNode, internalNodes } = useMemo(() => {
+    if (!drilledNodeId) {
+      return { internalNodeIds: new Set<string>(), parentDrilledNode: null, internalNodes: [] };
+    }
+
+    const parent = nodes.find((n) => n.id === drilledNodeId) || null;
+    if (!parent) {
+      return { internalNodeIds: new Set<string>(), parentDrilledNode: null, internalNodes: [] };
+    }
+
+    // Nodos internos conectados que sean de tier/rango jerárquico menor (hijos)
+    const ids = getInternalNodeIds(parent, nodes, connections);
+    const internals = nodes.filter((n) => ids.has(n.id));
+
+    return { internalNodeIds: ids, parentDrilledNode: parent, internalNodes: internals };
+  }, [drilledNodeId, nodes, connections]);
+
+  // Fijar la posición del nodo padre solo al ingresar a la vista interna (no recalcular mientras se arrastran nodos)
+  useEffect(() => {
+    if (!drilledNodeId) {
+      setFixedParentPos(null);
+      return;
+    }
+
+    const currentNodes = useGraphStore.getState().nodes;
+    const currentConns = useGraphStore.getState().connections;
+    const parent = currentNodes.find((n) => n.id === drilledNodeId);
+    if (!parent) return;
+
+    const ids = getInternalNodeIds(parent, currentNodes, currentConns);
+    const internals = currentNodes.filter((n) => ids.has(n.id));
+
+    if (internals.length > 0) {
+      let minX = Infinity, maxX = -Infinity, minY = Infinity;
+      internals.forEach((n) => {
+        if (n.x < minX) minX = n.x;
+        const dims = getBaseNodeDimensions(n);
+        if (n.x + dims.width > maxX) maxX = n.x + dims.width;
+        if (n.y < minY) minY = n.y;
+      });
+      const centerX = (minX + maxX) / 2;
+      const parentDims = getBaseNodeDimensions(parent);
+      setFixedParentPos({
+        x: centerX - parentDims.width / 2,
+        y: minY - parentDims.height * 0.7 - 60,
+      });
+    } else {
+      setFixedParentPos({ x: parent.x, y: parent.y });
+    }
+  }, [drilledNodeId]);
+
+  const displayedNodes = useMemo(() => {
+    if (!drilledNodeId || !parentDrilledNode) return nodes;
+
+    const parentWithPos = fixedParentPos
+      ? { ...parentDrilledNode, x: fixedParentPos.x, y: fixedParentPos.y }
+      : parentDrilledNode;
+
+    return [parentWithPos, ...internalNodes];
+  }, [drilledNodeId, parentDrilledNode, fixedParentPos, internalNodes, nodes]);
+
+  const externalConnections = useMemo(() => {
+    if (!drilledNodeId) return [];
+    const internalSet = new Set([drilledNodeId, ...Array.from(internalNodeIds)]);
+    return connections.filter((c) => {
+      const sIn = internalSet.has(c.source);
+      const tIn = internalSet.has(c.target);
+      return (sIn && !tIn) || (!sIn && tIn);
+    });
+  }, [drilledNodeId, internalNodeIds, connections]);
+
+  // Transición suave: centrar el nodo padre arriba en el medio y los nodos internos debajo
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    if (drilledNodeId) {
+      prevDrilledRef.current = drilledNodeId;
+      const timer = setTimeout(() => {
+        const rect = canvasRef.current?.getBoundingClientRect();
+        const vw = rect ? rect.width : (typeof window !== "undefined" ? window.innerWidth : 1200);
+        const vh = rect ? rect.height : (typeof window !== "undefined" ? window.innerHeight : 800);
+
+        const currentNodes = useGraphStore.getState().nodes;
+        const currentConns = useGraphStore.getState().connections;
+        const pNode = currentNodes.find((n) => n.id === drilledNodeId);
+        if (!pNode) return;
+
+        const ids = getInternalNodeIds(pNode, currentNodes, currentConns);
+        const internals = currentNodes.filter((n) => ids.has(n.id));
+        const parentDims = getBaseNodeDimensions(pNode);
+
+        if (internals.length === 0) {
+          const targetX = vw / 2 - (pNode.x + parentDims.width / 2) * 1.0;
+          const targetY = vh / 2 - (pNode.y + parentDims.height / 2) * 1.0;
+          animateZoom(1.0, { x: targetX, y: targetY }, 550);
+          return;
+        }
+
+        let minX = Infinity, maxX = -Infinity, minY = Infinity;
+        internals.forEach((n) => {
+          if (n.x < minX) minX = n.x;
+          const dims = getBaseNodeDimensions(n);
+          if (n.x + dims.width > maxX) maxX = n.x + dims.width;
+          if (n.y < minY) minY = n.y;
+        });
+        const centerX = (minX + maxX) / 2;
+        const pLayoutY = minY - parentDims.height * 0.7 - 60;
+
+        const targetScale = 1.0;
+        const visibleCenterX = (vw + 290) / 2;
+        const targetX = visibleCenterX - centerX * targetScale;
+        const targetY = 70 - pLayoutY * targetScale;
+
+        animateZoom(
+          targetScale,
+          {
+            x: targetX,
+            y: targetY,
+          },
+          550
+        );
+      }, 30);
+
+      return () => clearTimeout(timer);
+    } else if (prevDrilledRef.current) {
+      // Regreso suave a la vista general
+      const previousId = prevDrilledRef.current;
+      prevDrilledRef.current = null;
+      const timer = setTimeout(() => {
+        const currentNodes = useGraphStore.getState().nodes;
+        const targetNode = currentNodes.find((n) => n.id === previousId);
+        const rect = canvasRef.current?.getBoundingClientRect();
+        const vw = rect ? rect.width : (typeof window !== "undefined" ? window.innerWidth : 1200);
+        const vh = rect ? rect.height : (typeof window !== "undefined" ? window.innerHeight : 800);
+
+        if (targetNode) {
+          const dims = getBaseNodeDimensions(targetNode);
+          const targetScale = DISCRETE_ZOOM_LEVELS[1] || 0.6;
+          animateZoom(
+            targetScale,
+            {
+              x: vw / 2 - (targetNode.x + dims.width / 2) * targetScale,
+              y: vh / 2 - (targetNode.y + dims.height / 2) * targetScale,
+            },
+            550
+          );
+        } else {
+          centerOnNodes(DISCRETE_ZOOM_LEVELS[0]);
+        }
+      }, 30);
+
+      return () => clearTimeout(timer);
+    }
+  }, [drilledNodeId]);
 
   const handleContextMenu = (e: React.MouseEvent, targetNodeId?: string) => {
     e.preventDefault();
@@ -280,15 +448,26 @@ export default function AgentCanvas() {
       setIsCanvasDragging(true);
       setDragMouseStart({ x: e.clientX - position.x, y: e.clientY - position.y });
       setSelectedNodeIds([]);
+      closeNodeDetails();
       selectConnection(null);
     }
   };
 
   const handleNodeMouseDown = (e: React.MouseEvent, id: string) => {
     setContextMenu((prev) => (prev.visible ? { ...prev, visible: false } : prev));
-
-    if (e.button !== 0 || editorMode === "view") return;
+    if (e.button !== 0) return;
     e.stopPropagation();
+
+    if (editorMode === "view") {
+      setSelectedNodeIds([id]);
+      openNodeDetails(id);
+      const node = displayedNodes.find((n) => n.id === id) || nodes.find((n) => n.id === id);
+      if (node) {
+        handleNodeClick(node);
+      }
+      return;
+    }
+
     recordSnapshot();
 
     let currentSelected = [...selectedNodeIds];
@@ -299,6 +478,7 @@ export default function AgentCanvas() {
       currentSelected = [id];
       setSelectedNodeIds([id]);
     }
+    openNodeDetails(id);
 
     setActiveDragNodeId(id);
     setDragMouseStart({ x: e.clientX, y: e.clientY });
@@ -421,7 +601,7 @@ export default function AgentCanvas() {
         name: `Nuevo ${rawType}`,
         role: "Sin definir",
         type: rawType as NodeType,
-        status: "Idle",
+        status: "On-hold",
         x: snapToGrid ? Math.round(canvasX / 20) * 20 : canvasX,
         y: snapToGrid ? Math.round(canvasY / 20) * 20 : canvasY,
       };
@@ -432,6 +612,10 @@ export default function AgentCanvas() {
   const handleNodeClick = (node: CustomNode) => {
     if (!canvasRef.current || editorMode !== "view") return;
 
+    const dims = getBaseNodeDimensions(node);
+    const nodeCenterX = node.x + dims.width / 2;
+    const nodeCenterY = node.y + dims.height / 2;
+
     const tier = NODE_TIERS[node.type] || 3;
     const targetScale = getClickZoomForTier(tier);
 
@@ -439,23 +623,25 @@ export default function AgentCanvas() {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const targetPosX = centerX - node.x * targetScale;
-    const targetPosY = centerY - node.y * targetScale;
+    const targetPosX = centerX - nodeCenterX * targetScale;
+    const targetPosY = centerY - nodeCenterY * targetScale;
 
-    animateZoom(targetScale, { x: targetPosX, y: targetPosY });
+    animateZoom(targetScale, { x: targetPosX, y: targetPosY }, 500);
   };
 
   const renderNodeView = (node: CustomNode) => {
     const isSelected = selectedNodeIds.includes(node.id);
-    const opacity = getNodeOpacity(node.type, scale, isSemanticZoomActive);
+    const isDrilledParent = drilledNodeId === node.id;
+    const isInsideDrill = !!drilledNodeId;
+    const opacity = isInsideDrill ? 1.0 : getNodeOpacity(node.type, scale, isSemanticZoomActive);
 
     if (opacity <= 0.02) return null;
 
     const props = {
       node,
       isSelected,
-      zoomScale: scale,
-      isSemanticZoomActive,
+      zoomScale: isDrilledParent ? 0.7 : (isInsideDrill ? 1.0 : scale),
+      isSemanticZoomActive: !isInsideDrill && isSemanticZoomActive,
       onMouseDown: (e: React.MouseEvent) => handleNodeMouseDown(e, node.id),
       onContextMenu: (e: React.MouseEvent) => handleContextMenu(e, node.id),
     };
@@ -518,6 +704,17 @@ export default function AgentCanvas() {
         key={node.id}
         data-node-id={node.id}
         onClick={() => handleNodeClick(node)}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          const isContainer = ["HUB", "DEPARTMENT", "AREA", "HUB2", "PROCESS", "GROUP", "SUBPROCESS"].includes(node.type);
+          if (isContainer) {
+            if (drilledNodeId === node.id) {
+              exitDrillDown();
+            } else {
+              enterDrillDown(node.id);
+            }
+          }
+        }}
         style={{
           position: "absolute",
           left: 0,
@@ -526,6 +723,29 @@ export default function AgentCanvas() {
           pointerEvents: opacity > 0.25 ? "auto" : "none",
         }}
       >
+        {isDrilledParent && (
+          <div
+            style={{
+              position: "absolute",
+              top: `${node.y - 28}px`,
+              left: `${node.x + (node.width || 280) / 2}px`,
+              transform: "translateX(-50%)",
+              backgroundColor: theme === "santander" ? "#EC0000" : "#00f0ff",
+              color: theme === "santander" ? "#ffffff" : "#05070f",
+              fontSize: "10px",
+              fontWeight: 800,
+              padding: "3px 10px",
+              borderRadius: "12px",
+              letterSpacing: "0.5px",
+              whiteSpace: "nowrap",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.5)",
+              zIndex: 30,
+              pointerEvents: "none",
+            }}
+          >
+            NODO CONTENEDOR EN FOCO
+          </div>
+        )}
         {nodeEl}
       </div>
     );
@@ -540,12 +760,13 @@ export default function AgentCanvas() {
     if (!canvasRef.current) return;
     if (Math.abs(e.deltaY) < 5) return;
 
+    const levels = drilledNodeId ? [0.8, 1.0] : DISCRETE_ZOOM_LEVELS;
     const currentIdx = getClosestZoomIndex(targetScaleRef.current);
     const nextIdx = e.deltaY < 0 
-      ? Math.min(currentIdx + 1, DISCRETE_ZOOM_LEVELS.length - 1)
+      ? Math.min(currentIdx + 1, levels.length - 1)
       : Math.max(currentIdx - 1, 0);
 
-    const newScale = DISCRETE_ZOOM_LEVELS[nextIdx];
+    const newScale = levels[nextIdx];
     if (newScale === targetScaleRef.current) return;
 
     const rect = canvasRef.current.getBoundingClientRect();
@@ -592,9 +813,62 @@ export default function AgentCanvas() {
         transition: "background-color 0.3s ease",
       }}
     >
+      {/* Botón flotante para salir de Nodos Internos */}
+      {drilledNodeId && parentDrilledNode && (
+        <div
+          style={{
+            position: "absolute",
+            top: "20px",
+            left: "310px",
+            zIndex: 40,
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            backgroundColor: theme === "santander" ? "rgba(25, 10, 10, 0.94)" : "rgba(10, 15, 29, 0.94)",
+            backdropFilter: "blur(12px)",
+            border: theme === "santander" ? "1px solid rgba(236, 0, 0, 0.4)" : "1px solid rgba(0, 240, 255, 0.4)",
+            padding: "8px 18px",
+            borderRadius: "30px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+          }}
+        >
+          <button
+            onClick={exitDrillDown}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              backgroundColor: theme === "santander" ? "#EC0000" : "#00f0ff",
+              color: theme === "santander" ? "#ffffff" : "#000000",
+              fontWeight: "bold",
+              fontSize: "12px",
+              border: "none",
+              borderRadius: "20px",
+              padding: "6px 14px",
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              transition: "transform 0.15s ease",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            <ArrowLeft size={14} /> Volver a vista general
+          </button>
+          <div style={{ width: "1px", height: "18px", backgroundColor: "rgba(255,255,255,0.15)" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#f4f4f5" }}>
+            <span style={{ color: "#94a3b8" }}>Nivel:</span>
+            <span style={{ fontWeight: 600, color: theme === "santander" ? "#EC0000" : "#38bdf8" }}>
+              {parentDrilledNode.name}
+            </span>
+            <span style={{ fontSize: "10px", color: "#71717a", marginLeft: "4px" }}>
+              ({internalNodes.length} nodos internos)
+            </span>
+          </div>
+        </div>
+      )}
+
       <NodeInspector />
       <Sidebar />
-      <ExportImportPanel />
 
       <CanvasControls
         scale={scale}
@@ -603,10 +877,11 @@ export default function AgentCanvas() {
         onToggleSnap={() => setSnapToGrid(!snapToGrid)}
         onToggleSemanticZoom={() => setIsSemanticZoomActive(!isSemanticZoomActive)}
         onZoomIn={() => {
+          const levels = drilledNodeId ? [0.8, 1.0] : DISCRETE_ZOOM_LEVELS;
           const s = targetScaleRef.current;
           const currentIdx = getClosestZoomIndex(s);
-          const nextIdx = Math.min(currentIdx + 1, DISCRETE_ZOOM_LEVELS.length - 1);
-          const next = DISCRETE_ZOOM_LEVELS[nextIdx];
+          const nextIdx = Math.min(currentIdx + 1, levels.length - 1);
+          const next = levels[nextIdx];
           const rect = canvasRef.current?.getBoundingClientRect();
           const centerX = rect ? rect.width / 2 : 500;
           const centerY = rect ? rect.height / 2 : 300;
@@ -615,10 +890,11 @@ export default function AgentCanvas() {
           animateZoom(next, { x: centerX - canvasX * next, y: centerY - canvasY * next });
         }}
         onZoomOut={() => {
+          const levels = drilledNodeId ? [0.8, 1.0] : DISCRETE_ZOOM_LEVELS;
           const s = targetScaleRef.current;
           const currentIdx = getClosestZoomIndex(s);
           const prevIdx = Math.max(currentIdx - 1, 0);
-          const prev = DISCRETE_ZOOM_LEVELS[prevIdx];
+          const prev = levels[prevIdx];
           const rect = canvasRef.current?.getBoundingClientRect();
           const centerX = rect ? rect.width / 2 : 500;
           const centerY = rect ? rect.height / 2 : 300;
@@ -626,7 +902,7 @@ export default function AgentCanvas() {
           const canvasY = (centerY - targetPosRef.current.y) / s;
           animateZoom(prev, { x: centerX - canvasX * prev, y: centerY - canvasY * prev });
         }}
-        onReset={() => centerOnNodes(DISCRETE_ZOOM_LEVELS[0])}
+        onReset={() => centerOnNodes(drilledNodeId ? 1.0 : DISCRETE_ZOOM_LEVELS[0])}
       />
 
       <MiniMap scale={scale} position={position} onNavigate={(nx, ny) => setPosition({ x: nx, y: ny })} />
@@ -642,17 +918,76 @@ export default function AgentCanvas() {
             transformOrigin: "0 0",
             position: "absolute",
             inset: 0,
-            // CSS transition removida. Usamos el loop de React con requestAnimationFrame para 60fps constantes.
           }}
         >
           <CanvasConnections
-            nodes={nodes}
+            nodes={displayedNodes}
             selectedNodeId={selectedNodeIds[0] || null}
             scale={scale}
-            isSemanticZoomActive={isSemanticZoomActive}
+            isSemanticZoomActive={!drilledNodeId && isSemanticZoomActive}
           />
 
-          {nodes.map((node) => renderNodeView(node))}
+          {displayedNodes.map((node) => renderNodeView(node))}
+
+          {/* Indicadores de conexiones externas cuando se está en vista interna */}
+          {drilledNodeId && (
+            <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", overflow: "visible", pointerEvents: "none", zIndex: 15 }}>
+              {externalConnections.map((c) => {
+                const isSourceInternal = [drilledNodeId, ...Array.from(internalNodeIds)].includes(c.source);
+                const internalId = isSourceInternal ? c.source : c.target;
+                const externalId = isSourceInternal ? c.target : c.source;
+                const intNode = displayedNodes.find((n) => n.id === internalId);
+                const extNode = nodes.find((n) => n.id === externalId);
+                if (!intNode) return null;
+
+                const intDims = getBaseNodeDimensions(intNode);
+                const startX = intNode.x + intDims.width / 2;
+                const startY = intNode.y;
+                const targetY = startY - 40;
+
+                const rectWidth = 114;
+                const rectHeight = 22;
+                const rectX = startX - rectWidth / 2;
+                const rectY = targetY - rectHeight + 2;
+
+                return (
+                  <g key={`ext-${c.id}`} opacity={0.9}>
+                    <line
+                      x1={startX}
+                      y1={startY}
+                      x2={startX}
+                      y2={targetY}
+                      stroke={theme === "santander" ? "#EC0000" : "#00f0ff"}
+                      strokeWidth={2}
+                      strokeDasharray="4 4"
+                    />
+                    <circle cx={startX} cy={targetY} r={3.5} fill={theme === "santander" ? "#EC0000" : "#00f0ff"} />
+                    <rect
+                      x={rectX}
+                      y={rectY}
+                      width={rectWidth}
+                      height={rectHeight}
+                      rx={5}
+                      fill={theme === "santander" ? "rgba(40,10,10,0.94)" : "rgba(10,20,35,0.94)"}
+                      stroke={theme === "santander" ? "rgba(236,0,0,0.6)" : "rgba(0,240,255,0.6)"}
+                      strokeWidth={1}
+                    />
+                    <text
+                      x={startX}
+                      y={rectY + 14}
+                      fill={theme === "santander" ? "#fca5a5" : "#7dd3fc"}
+                      fontSize="9.5px"
+                      fontWeight="bold"
+                      fontFamily="sans-serif"
+                      textAnchor="middle"
+                    >
+                      ↗ EXT: {extNode ? extNode.name.slice(0, 11) : "EXTERNO"}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          )}
 
           {/* Guías de alineación */}
           {alignmentGuides.x !== undefined && (
@@ -693,7 +1028,7 @@ export default function AgentCanvas() {
             name: `Nuevo ${type}`,
             role: "Sin definir",
             type,
-            status: "Idle",
+            status: "On-hold",
             x: contextMenu.canvasX,
             y: contextMenu.canvasY,
           };

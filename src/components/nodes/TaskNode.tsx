@@ -51,8 +51,8 @@ export default function TaskNode({ node, isSelected, zoomScale = 1, isSemanticZo
         zIndex: 10,
         display: "flex",
         alignItems: "center",
-        padding: "12px",
-        gap: "8px",
+        padding: "6px 8px",
+        gap: "6px",
       }}
     >
       <NodeHandle nodeId={node.id} position="top" />

@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { ContextMenuState, NodeType } from "@/types";
-import { Plus, Wrench, Cpu, Copy, Trash2 } from "lucide-react";
+import { Plus, Wrench, Cpu, Copy, Trash2, Eye } from "lucide-react";
+import { useGraphStore } from "@/store/useGraphStore";
 
 interface ContextMenuProps {
   state: ContextMenuState;
@@ -20,6 +21,8 @@ export default function ContextMenu({
   onDeleteNode,
 }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const { openNodeDetails, enterDrillDown, exitDrillDown, drilledNodeId } = useGraphStore();
+  const isCurrentlyDrilled = state.targetNodeId ? drilledNodeId === state.targetNodeId : false;
 
   useEffect(() => {
     if (!state.visible) return;
@@ -149,6 +152,32 @@ export default function ContextMenu({
             <div style={{ padding: "4px 8px", fontSize: "9px", color: "#06b6d4", fontWeight: "bold", letterSpacing: "1px" }}>
               OPCIONES DE NODO
             </div>
+            <button
+              onClick={() => {
+                if (isCurrentlyDrilled) {
+                  exitDrillDown();
+                } else {
+                  enterDrillDown(state.targetNodeId!);
+                }
+                onClose();
+              }}
+              style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%", padding: "6px 8px", backgroundColor: isCurrentlyDrilled ? "rgba(6, 182, 212, 0.2)" : "transparent", border: "none", color: "#38bdf8", fontSize: "11px", fontWeight: 600, textAlign: "left", cursor: "pointer", borderRadius: "4px" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1e293b")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = isCurrentlyDrilled ? "rgba(6, 182, 212, 0.2)" : "transparent")}
+            >
+              <Eye size={12} /> {isCurrentlyDrilled ? "Salir de vista interna" : "Ver nodos internos"}
+            </button>
+            <button
+              onClick={() => {
+                openNodeDetails(state.targetNodeId!);
+                onClose();
+              }}
+              style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%", padding: "6px 8px", backgroundColor: "transparent", border: "none", color: "#94a3b8", fontSize: "11px", textAlign: "left", cursor: "pointer", borderRadius: "4px" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1e293b")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+            >
+              <Eye size={12} /> Configuración / Info
+            </button>
             <button
               onClick={() => onDuplicateNode(state.targetNodeId!)}
               style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%", padding: "6px 8px", backgroundColor: "transparent", border: "none", color: "#f4f4f5", fontSize: "11px", textAlign: "left", cursor: "pointer", borderRadius: "4px" }}
