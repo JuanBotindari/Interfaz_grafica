@@ -1,25 +1,18 @@
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === 'production';
-const repoName = 'interfaz_grafica'; // 👈 nombre exacto de tu repo en GitHub
+const repoName = 'interfaz_grafica';
+
+// Detecta si estamos en GitHub Actions (para no romper el dev local)
+const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
 
 const nextConfig = {
-  // Siempre activo (solo afecta al dev server)
-  allowedDevOrigins: [
-    '192.168.1.12',
-    'localhost',
-    '*.serveousercontent.com',
-    'serveo.net',
-  ],
-
-  // ---- Solo en PRODUCCIÓN (build para GitHub Pages) ----
-  ...(isProd && {
-    output: 'export',
-    basePath: `/${repoName}`,
-    images: { unoptimized: true },
-  }),
-
-  // ---- Solo en DESARROLLO (headers no existen en export estático) ----
-  ...(!isProd && {
+  // Solo activo en dev (headers no existen en export estático)
+  ...(!isGitHubPages && {
+    allowedDevOrigins: [
+      '192.168.1.12',
+      'localhost',
+      '*.serveousercontent.com',
+      'serveo.net',
+    ],
     async headers() {
       return [
         {
@@ -32,6 +25,14 @@ const nextConfig = {
         },
       ];
     },
+  }),
+
+  // Configuración de GitHub Pages: SIEMPRE activa al compilar
+  ...(isGitHubPages && {
+    output: 'export',
+    basePath: `/${repoName}`,
+    assetPrefix: `/${repoName}/`,   // 👈 La pieza que faltaba
+    images: { unoptimized: true },
   }),
 };
 
