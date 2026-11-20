@@ -1,12 +1,15 @@
 /** @type {import('next').NextConfig} */
-const repoName = 'Interfaz_grafica';
-
-// Detecta si estamos en GitHub Actions (para no romper el dev local)
-const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+const repoName = 'Interfaz_grafica'; // 👈 Con I mayúscula, como tu repo
 
 const nextConfig = {
-  // Solo activo en dev (headers no existen en export estático)
-  ...(!isGitHubPages && {
+  // Configuración de GitHub Pages: SIEMPRE activa al compilar
+  output: 'export',
+  basePath: `/${repoName}`,
+  assetPrefix: `/${repoName}/`,
+  images: { unoptimized: true },
+
+  // Solo para desarrollo (headers no existen en export estático)
+  ...(process.env.NODE_ENV === 'development' && {
     allowedDevOrigins: [
       '192.168.1.12',
       'localhost',
@@ -25,14 +28,6 @@ const nextConfig = {
         },
       ];
     },
-  }),
-
-  // Configuración de GitHub Pages: SIEMPRE activa al compilar
-  ...(isGitHubPages && {
-    output: 'export',
-    basePath: `/${repoName}`,
-    assetPrefix: `/${repoName}/`,   // 👈 La pieza que faltaba
-    images: { unoptimized: true },
   }),
 };
 
