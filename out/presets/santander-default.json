@@ -1,0 +1,1384 @@
+{
+  "version": "2.0",
+  "theme": "santander",
+  "createdAt": "2026-09-15T07:33:26.731Z",
+  "nodes": [
+    {
+      "id": "n1-soporte",
+      "name": "Soporte y Comunicaciones",
+      "type": "AREA",
+      "x": 2400,
+      "y": -2380
+    },
+    {
+      "id": "n1-colectivos",
+      "name": "Colectivos",
+      "type": "AREA",
+      "x": 820,
+      "y": -2380
+    },
+    {
+      "id": "n1-individuales",
+      "name": "Individuales",
+      "type": "AREA",
+      "x": -720,
+      "y": -2380
+    },
+    {
+      "id": "sop-procesos",
+      "name": "Procesos",
+      "type": "HUB2",
+      "x": 1780,
+      "y": -1920,
+      "width": 160,
+      "height": 60
+    },
+    {
+      "id": "sop-p-contratacion",
+      "name": "Contratación",
+      "type": "PROCESS",
+      "x": 1480,
+      "y": -1355.555243466495
+    },
+    {
+      "id": "sop-c-nuevo-prod",
+      "name": "Nuevo Producto",
+      "type": "SUBPROCESS",
+      "x": 1262.2843651939188,
+      "y": -1153.8847287740577,
+      "width": 140,
+      "height": 50
+    },
+    {
+      "id": "sop-c-np-sol",
+      "name": "Solicitud Negocio",
+      "type": "TASK",
+      "x": 1295.5977176500642,
+      "y": -1049.1224213394044
+    },
+    {
+      "id": "sop-c-np-anl",
+      "name": "Análisis de Impacto",
+      "type": "TASK",
+      "x": 1295.5977176500642,
+      "y": -908.0418005743215
+    },
+    {
+      "id": "sop-c-np-prep",
+      "name": "Preparación del KID",
+      "type": "TASK",
+      "x": 1295.5977176500642,
+      "y": -785.2183872635444
+    },
+    {
+      "id": "sop-c-np-utl",
+      "name": "LPA",
+      "type": "RESOURCE",
+      "x": 1287.2210805647937,
+      "y": -681.79321424397
+    },
+    {
+      "id": "sop-c-np-val",
+      "name": "Validación",
+      "type": "DECISION",
+      "x": 1287.2210805647937,
+      "y": -606.225962523311
+    },
+    {
+      "id": "sop-c-np-prod",
+      "name": "Producción",
+      "type": "ACTION",
+      "x": 1291.617698527252,
+      "y": -224.75731249576165
+    },
+    {
+      "id": "sop-c-act-prod",
+      "name": "Actualización Producto",
+      "type": "SUBPROCESS",
+      "x": 1699.5746294954406,
+      "y": -1153.8847287740577,
+      "width": 160,
+      "height": 50
+    },
+    {
+      "id": "sop-c-ap-sol",
+      "name": "Solicitud Negocio",
+      "type": "TASK",
+      "x": 1732.4043947411428,
+      "y": -1049.1224213394044
+    },
+    {
+      "id": "sop-c-ap-anl",
+      "name": "Análisis de Impacto",
+      "type": "TASK",
+      "x": 1732.4043947411428,
+      "y": -917.0079560347456
+    },
+    {
+      "id": "sop-c-ap-prep",
+      "name": "Preparación del KID",
+      "type": "TASK",
+      "x": 1732.4043947411428,
+      "y": -785.2183872635444
+    },
+    {
+      "id": "sop-c-ap-utl",
+      "name": "LPA",
+      "type": "RESOURCE",
+      "x": 1732.4043947411428,
+      "y": -681.79321424397
+    },
+    {
+      "id": "sop-c-ap-val",
+      "name": "Validación",
+      "type": "DECISION",
+      "x": 1742.6666666666665,
+      "y": -590.2856014653254
+    },
+    {
+      "id": "sop-p-postcontratacion",
+      "name": "Post-Contratación",
+      "type": "PROCESS",
+      "x": 2404.2619042336214,
+      "y": -1355.555243466495
+    },
+    {
+      "id": "sop-post-manuales",
+      "name": "Comunicaciones Manuales",
+      "type": "SUBPROCESS",
+      "x": 2410.5136676734237,
+      "y": -1172.5935971801246,
+      "width": 170,
+      "height": 50
+    },
+    {
+      "id": "sop-post-m-act",
+      "name": "Actualización Quincenal de Rentas",
+      "type": "TASK",
+      "x": 2249.7833088761317,
+      "y": -940.1190671458565
+    },
+    {
+      "id": "sop-post-m-sol",
+      "name": "Solicitud Negocio",
+      "type": "TASK",
+      "x": 2249.7833088761317,
+      "y": -830.1190671458567
+    },
+    {
+      "id": "sop-post-m-def",
+      "name": "Revision de los ficheros (uno por cada producto)",
+      "type": "TASK",
+      "x": 2249.7833088761317,
+      "y": -736.0927030377273
+    },
+    {
+      "id": "sop-post-semiauto",
+      "name": "Comunicaciones Semiautomáticas",
+      "type": "SUBPROCESS",
+      "x": 3031.8913045088157,
+      "y": -1172.5935971801246,
+      "width": 190,
+      "height": 50
+    },
+    {
+      "id": "sop-post-auto",
+      "name": "Comunicaciones Automáticas",
+      "type": "SUBPROCESS",
+      "x": 3363.919020848469,
+      "y": -1172.5935971801246,
+      "width": 180,
+      "height": 50
+    },
+    {
+      "id": "sop-p-otros",
+      "name": "Otros",
+      "type": "PROCESS",
+      "x": 3552.5856875151358,
+      "y": -1355.555243466495
+    },
+    {
+      "id": "sop-o-negocio",
+      "name": "Soporte a Negocio",
+      "type": "TASK",
+      "x": 4375.544170445429,
+      "y": -999.5552434664951
+    },
+    {
+      "id": "sop-o-incidencias",
+      "name": "Incidencias",
+      "type": "TASK",
+      "x": 4375.544170445429,
+      "y": -839.5552434664951
+    },
+    {
+      "id": "sop-o-plantillas",
+      "name": "Cambio de Plantillas",
+      "type": "TASK",
+      "x": 4355.544170445429,
+      "y": -669.5552434664951
+    },
+    {
+      "id": "sop-o-req",
+      "name": "Nuevos Requerimientos",
+      "type": "TASK",
+      "x": 4375.544170445429,
+      "y": -519.5552434664951
+    },
+    {
+      "id": "sop-o-pruebas",
+      "name": "Pruebas",
+      "type": "TASK",
+      "x": 4375.544170445429,
+      "y": -359.5552434664951
+    },
+    {
+      "id": "sop-est-datos",
+      "name": "Estructura de Datos",
+      "type": "HUB2",
+      "x": 3720,
+      "y": -1920,
+      "width": 170,
+      "height": 60
+    },
+    {
+      "id": "sop-ed-tablas",
+      "name": "Tablas",
+      "type": "SUBPROCESS",
+      "x": 6341.544170445429,
+      "y": -691.5552434664951,
+      "width": 110,
+      "height": 50
+    },
+    {
+      "id": "sop-ed-sistemas",
+      "name": "Sistemas",
+      "type": "SUBPROCESS",
+      "x": 6285.544170445429,
+      "y": -513.5552434664951,
+      "width": 110,
+      "height": 50
+    },
+    {
+      "id": "sop-ed-validaciones",
+      "name": "Validaciones",
+      "type": "SUBPROCESS",
+      "x": 6363.544170445429,
+      "y": -279.5552434664951,
+      "width": 120,
+      "height": 50
+    },
+    {
+      "id": "sop-ed-proveedores",
+      "name": "Proveedores",
+      "type": "SUBPROCESS",
+      "x": 6333.544170445429,
+      "y": -811.5552434664951,
+      "width": 120,
+      "height": 50
+    },
+    {
+      "id": "n2-admin-polizas",
+      "name": "Administración de Pólizas",
+      "type": "HUB2",
+      "x": -1120,
+      "y": -1860,
+      "width": 170,
+      "height": 60
+    },
+    {
+      "id": "n2-crs",
+      "name": "CRS (Fiscalidad)",
+      "type": "HUB2",
+      "x": -560,
+      "y": -1860,
+      "width": 150,
+      "height": 60
+    },
+    {
+      "id": "n2-reclamaciones",
+      "name": "Reclamaciones",
+      "type": "HUB2",
+      "x": -840,
+      "y": -1860,
+      "width": 150,
+      "height": 60
+    },
+    {
+      "id": "n2-prestaciones",
+      "name": "Prestaciones",
+      "type": "HUB2",
+      "x": -280,
+      "y": -1860,
+      "width": 150,
+      "height": 60
+    },
+    {
+      "id": "n3-seleccion-riesgo",
+      "name": "Selección de Riesgo",
+      "type": "PROCESS",
+      "x": -1300,
+      "y": -1500
+    },
+    {
+      "id": "n3-polizas",
+      "name": "Pólizas",
+      "type": "PROCESS",
+      "x": -1120,
+      "y": -1500
+    },
+    {
+      "id": "n3-siga",
+      "name": "SIGA (Banca Privada)",
+      "type": "PROCESS",
+      "x": -932,
+      "y": -1500,
+      "width": 140,
+      "height": 60
+    },
+    {
+      "id": "n3-extornos",
+      "name": "Extornos / Recibos",
+      "type": "PROCESS",
+      "x": -739.9385838358456,
+      "y": -1500,
+      "width": 140,
+      "height": 60
+    },
+    {
+      "id": "n3-fallecimiento",
+      "name": "Fallecimiento",
+      "type": "PROCESS",
+      "x": -479.3333333333333,
+      "y": -1500,
+      "width": 130,
+      "height": 60
+    },
+    {
+      "id": "n3-invalidez",
+      "name": "Invalidez",
+      "type": "PROCESS",
+      "x": -257.1867624874408,
+      "y": -1500,
+      "width": 120,
+      "height": 60
+    },
+    {
+      "id": "n3-otros",
+      "name": "Otros",
+      "type": "PROCESS",
+      "x": -33.136628918071594,
+      "y": -1500,
+      "width": 110,
+      "height": 60
+    },
+    {
+      "id": "kb-main",
+      "name": "Base de Conocimiento RAG",
+      "type": "KNOWLEDGE_BASE",
+      "x": -678.6666666666667,
+      "y": -1200
+    },
+    {
+      "id": "kb-incidencias",
+      "name": "Incidencias Detectadas",
+      "type": "RESOURCE",
+      "x": -932,
+      "y": -883.4524004791899
+    },
+    {
+      "id": "kb-caus",
+      "name": "CAUs",
+      "type": "RESOURCE",
+      "x": -773.0797880990044,
+      "y": -883.4524004791899
+    },
+    {
+      "id": "kb-procedimientos",
+      "name": "Procedimientos",
+      "type": "RESOURCE",
+      "x": -592,
+      "y": -883.4524004791899
+    },
+    {
+      "id": "kb-jira",
+      "name": "Jira API",
+      "type": "TOOL",
+      "x": -433.99999999999994,
+      "y": -883.4524004791899
+    },
+    {
+      "id": "kb-kpis",
+      "name": "KPIs",
+      "type": "RESOURCE",
+      "x": -280,
+      "y": -883.4524004791899
+    },
+    {
+      "id": "kb-powerbi",
+      "name": "Power BI API",
+      "type": "TOOL",
+      "x": -2348.940029384073,
+      "y": -1530.4025891053782
+    },
+    {
+      "id": "res-databricks",
+      "name": "Databricks API",
+      "type": "TOOL",
+      "x": -2221.828918272962,
+      "y": -1530.4025891053782
+    },
+    {
+      "id": "res-reportes",
+      "name": "Reportes",
+      "type": "RESOURCE",
+      "x": -2099.6066960507396,
+      "y": -1530.4025891053782
+    },
+    {
+      "id": "res-notebooks",
+      "name": "Notebooks",
+      "type": "RESOURCE",
+      "x": -1965.8289182729618,
+      "y": -1530.4025891053782
+    },
+    {
+      "id": "res-extracciones",
+      "name": "Extracciones",
+      "type": "RESOURCE",
+      "x": -1812.9400293840731,
+      "y": -1530.4025891053782
+    },
+    {
+      "id": "res-desarrollos",
+      "name": "Desarrollos",
+      "type": "RESOURCE",
+      "x": -1652.0511404951844,
+      "y": -1530.4025891053782
+    },
+    {
+      "id": "mc-main",
+      "name": "Modelo de Control",
+      "type": "AGENT",
+      "x": -2000,
+      "y": -1210,
+      "width": 160,
+      "height": 70
+    },
+    {
+      "id": "agent-mdc",
+      "name": "Agente MDC",
+      "type": "AGENT",
+      "x": -2000,
+      "y": -1040
+    },
+    {
+      "id": "act-recomendaciones",
+      "name": "Recomendaciones",
+      "type": "ACTION",
+      "x": -2242.341654865208,
+      "y": -801.7377891683011
+    },
+    {
+      "id": "act-mail-1",
+      "name": "Envío de Mails",
+      "type": "ACTION",
+      "x": -2021.0977381219004,
+      "y": -801.7377891683011
+    },
+    {
+      "id": "act-controles",
+      "name": "Definición de controles",
+      "type": "ACTION",
+      "x": -1822.431071455234,
+      "y": -801.7377891683011
+    },
+    {
+      "id": "act-mail-2",
+      "name": "Envío de Mails",
+      "type": "ACTION",
+      "x": -1610.431071455234,
+      "y": -801.7377891683011
+    },
+    {
+      "id": "node-1788961916269",
+      "name": "OMNICANAL",
+      "role": "Sin definir",
+      "type": "TOOL",
+      "status": "On-hold",
+      "x": 1345.2210805647937,
+      "y": -476.6666666666666
+    },
+    {
+      "id": "node-1788961937789",
+      "name": "Preproduccion",
+      "role": "Sin definir",
+      "type": "ACTION",
+      "status": "On-hold",
+      "x": 1175.3333333333333,
+      "y": -465.99999999999994
+    },
+    {
+      "id": "node-1788961995248",
+      "name": "Informacion Correcta",
+      "role": "Sin definir",
+      "type": "DECISION",
+      "status": "On-hold",
+      "x": 1236.1700105033688,
+      "y": -378.95226813199224
+    },
+    {
+      "id": "node-1788962016459",
+      "name": "Informacion Incorrecta",
+      "role": "Sin definir",
+      "type": "DECISION",
+      "status": "On-hold",
+      "x": 1416.924047562433,
+      "y": -378.95226813199224
+    },
+    {
+      "id": "node-1788962107241",
+      "name": "Informacion Incorrecta",
+      "role": "Sin definir",
+      "type": "DECISION",
+      "status": "On-hold",
+      "x": 1665.9410175078838,
+      "y": -378.95226813199224
+    },
+    {
+      "id": "node-1788962108703",
+      "name": "Informacion Correcta",
+      "role": "Sin definir",
+      "type": "DECISION",
+      "status": "On-hold",
+      "x": 1820.277167115083,
+      "y": -378.95226813199224
+    },
+    {
+      "id": "node-1788962110763",
+      "name": "Produccion",
+      "role": "Sin definir",
+      "type": "ACTION",
+      "status": "On-hold",
+      "x": 1728.9079628287739,
+      "y": -224.75731249576165
+    },
+    {
+      "id": "node-1788964215856",
+      "name": "Recurrentes",
+      "role": "Sin definir",
+      "type": "SUBPROCESS",
+      "status": "On-hold",
+      "x": 2218.6721977650204,
+      "y": -1031.1148514121999
+    },
+    {
+      "id": "node-1788964229440",
+      "name": "Incidencias puntuales",
+      "role": "Sin definir",
+      "type": "SUBPROCESS",
+      "status": "On-hold",
+      "x": 2686.028382187029,
+      "y": -1031.1148514121999
+    },
+    {
+      "id": "node-1788964299110",
+      "name": "Carga de CSV en un solo fichero",
+      "role": "Sin definir",
+      "type": "ACTION",
+      "status": "On-hold",
+      "x": 2218.6721977650204,
+      "y": -632.8926291899777
+    },
+    {
+      "id": "node-1788964334372",
+      "name": "Deposito del fichero en una unidad",
+      "role": "Sin definir",
+      "type": "ACTION",
+      "status": "On-hold",
+      "x": 2218.6721977650204,
+      "y": -542.2219101331617
+    },
+    {
+      "id": "node-1788964384256",
+      "name": "Al otro dia se recogen los PDFs",
+      "role": "Sin definir",
+      "type": "TASK",
+      "status": "On-hold",
+      "x": 2249.7833088761317,
+      "y": -425.7815180788664
+    },
+    {
+      "id": "node-1788964392586",
+      "name": "Produccion",
+      "role": "Sin definir",
+      "type": "ACTION",
+      "status": "On-hold",
+      "x": 2225.3160133430115,
+      "y": -224.75731249576165
+    },
+    {
+      "id": "node-1788964489034",
+      "name": "Extornos",
+      "role": "Sin definir",
+      "type": "SUBPROCESS",
+      "status": "On-hold",
+      "x": 2582.329693840378,
+      "y": -883.4524004791899
+    },
+    {
+      "id": "node-1788964501394",
+      "name": "Regularizaciones",
+      "role": "Sin definir",
+      "type": "SUBPROCESS",
+      "status": "On-hold",
+      "x": 2850.3296938403773,
+      "y": -883.4524004791899
+    },
+    {
+      "id": "node-1789218868320",
+      "name": "Hipotecario",
+      "role": "Sin definir",
+      "type": "DEPARTMENT",
+      "status": "On-hold",
+      "x": -160,
+      "y": -4700
+    },
+    {
+      "id": "node-1789218897966",
+      "name": "Retail",
+      "role": "Sin definir",
+      "type": "HUB",
+      "status": "On-hold",
+      "x": 2600,
+      "y": -5260
+    },
+    {
+      "id": "node-1789219715655",
+      "name": "Seguros",
+      "role": "Sin definir",
+      "type": "DEPARTMENT",
+      "status": "On-hold",
+      "x": 740,
+      "y": -3100
+    },
+    {
+      "id": "node-1789219721797",
+      "name": "Pagos y Cobros",
+      "role": "Sin definir",
+      "type": "DEPARTMENT",
+      "status": "On-hold",
+      "x": 4600,
+      "y": -3040
+    },
+    {
+      "id": "node-1789219731129",
+      "name": "Inversiones",
+      "role": "Sin definir",
+      "type": "DEPARTMENT",
+      "status": "On-hold",
+      "x": 5420,
+      "y": -4740
+    },
+    {
+      "id": "node-1789395839521",
+      "name": "Agente Seleccion de Riesgo",
+      "role": "Sin definir",
+      "type": "AGENT",
+      "status": "On-hold",
+      "x": -1440,
+      "y": -1440
+    },
+    {
+      "id": "node-1789395874735",
+      "name": "Agente Soporte y Comunicaciones",
+      "role": "Sin definir",
+      "type": "AGENT",
+      "status": "On-hold",
+      "x": 2079.1400315820083,
+      "y": -2335.7030372434147
+    }
+  ],
+  "connections": [
+    {
+      "id": "c-1789221972671",
+      "source": "node-1789218897966",
+      "target": "node-1789218868320",
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "data"
+    },
+    {
+      "id": "c-1789221974659",
+      "source": "node-1789218897966",
+      "target": "node-1789219715655",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789221976798",
+      "source": "node-1789218897966",
+      "target": "node-1789219721797",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789221978754",
+      "source": "node-1789218897966",
+      "target": "node-1789219731129",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "data"
+    },
+    {
+      "id": "c-1789221984550",
+      "source": "node-1789219715655",
+      "target": "n1-individuales",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789221986673",
+      "source": "node-1789219715655",
+      "target": "n1-colectivos",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789221989544",
+      "source": "node-1789219715655",
+      "target": "n1-soporte",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222416168",
+      "source": "n1-individuales",
+      "target": "n2-admin-polizas",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222419381",
+      "source": "n1-individuales",
+      "target": "n2-reclamaciones",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222421980",
+      "source": "n1-individuales",
+      "target": "n2-crs",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222425632",
+      "source": "n1-individuales",
+      "target": "n2-prestaciones",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222432347",
+      "source": "n2-admin-polizas",
+      "target": "n3-seleccion-riesgo",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222434597",
+      "source": "n2-admin-polizas",
+      "target": "n3-polizas",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222437841",
+      "source": "n2-admin-polizas",
+      "target": "n3-siga",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222440693",
+      "source": "n2-admin-polizas",
+      "target": "n3-extornos",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222446468",
+      "source": "n2-prestaciones",
+      "target": "n3-fallecimiento",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222449160",
+      "source": "n2-prestaciones",
+      "target": "n3-invalidez",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222451861",
+      "source": "n2-prestaciones",
+      "target": "n3-otros",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222462154",
+      "source": "n3-seleccion-riesgo",
+      "target": "kb-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222466888",
+      "source": "n3-polizas",
+      "target": "kb-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222472848",
+      "source": "n3-siga",
+      "target": "kb-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222475307",
+      "source": "n3-extornos",
+      "target": "kb-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222481889",
+      "source": "n3-otros",
+      "target": "kb-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222484326",
+      "source": "n3-invalidez",
+      "target": "kb-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222486726",
+      "source": "n3-fallecimiento",
+      "target": "kb-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222489778",
+      "source": "kb-main",
+      "target": "kb-incidencias",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222491949",
+      "source": "kb-main",
+      "target": "kb-caus",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222494105",
+      "source": "kb-main",
+      "target": "kb-procedimientos",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222497367",
+      "source": "kb-main",
+      "target": "kb-kpis",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222501417",
+      "source": "kb-main",
+      "target": "kb-jira",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222512746",
+      "source": "kb-main",
+      "target": "mc-main",
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222518322",
+      "source": "mc-main",
+      "target": "agent-mdc",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222520888",
+      "source": "agent-mdc",
+      "target": "act-recomendaciones",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222524154",
+      "source": "agent-mdc",
+      "target": "act-mail-1",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222525882",
+      "source": "agent-mdc",
+      "target": "act-controles",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222527991",
+      "source": "agent-mdc",
+      "target": "act-mail-2",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222531665",
+      "source": "kb-powerbi",
+      "target": "mc-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222533718",
+      "source": "res-databricks",
+      "target": "mc-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222540059",
+      "source": "res-reportes",
+      "target": "mc-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222543481",
+      "source": "res-notebooks",
+      "target": "mc-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222548061",
+      "source": "res-desarrollos",
+      "target": "mc-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222555105",
+      "source": "res-extracciones",
+      "target": "mc-main",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222594145",
+      "source": "sop-procesos",
+      "target": "sop-p-contratacion",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222600178",
+      "source": "sop-procesos",
+      "target": "sop-p-postcontratacion",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222602642",
+      "source": "sop-procesos",
+      "target": "sop-p-otros",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222606502",
+      "source": "sop-p-contratacion",
+      "target": "sop-c-nuevo-prod",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222611580",
+      "source": "sop-p-contratacion",
+      "target": "sop-c-act-prod",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222614126",
+      "source": "sop-c-nuevo-prod",
+      "target": "sop-c-np-sol",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222616107",
+      "source": "sop-c-np-sol",
+      "target": "sop-c-np-anl",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222617992",
+      "source": "sop-c-act-prod",
+      "target": "sop-c-ap-sol",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222620178",
+      "source": "sop-c-ap-sol",
+      "target": "sop-c-ap-anl",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222622768",
+      "source": "sop-c-np-anl",
+      "target": "sop-c-np-prep",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222624562",
+      "source": "sop-c-ap-anl",
+      "target": "sop-c-ap-prep",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222626256",
+      "source": "sop-c-np-prep",
+      "target": "sop-c-np-utl",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222627750",
+      "source": "sop-c-np-utl",
+      "target": "sop-c-np-val",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222629425",
+      "source": "sop-c-ap-prep",
+      "target": "sop-c-ap-utl",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222630866",
+      "source": "sop-c-ap-utl",
+      "target": "sop-c-ap-val",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222632888",
+      "source": "sop-c-np-val",
+      "target": "node-1788961937789",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222634227",
+      "source": "node-1788961937789",
+      "target": "node-1788961916269",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222635619",
+      "source": "node-1788961916269",
+      "target": "node-1788961995248",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222637196",
+      "source": "node-1788961916269",
+      "target": "node-1788962016459",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222680365",
+      "source": "sop-c-ap-val",
+      "target": "node-1788962107241",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222681952",
+      "source": "sop-c-ap-val",
+      "target": "node-1788962108703",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222683565",
+      "source": "node-1788962108703",
+      "target": "node-1788962110763",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222699203",
+      "source": "node-1788962016459",
+      "target": "sop-c-np-anl",
+      "sourceHandle": "right",
+      "targetHandle": "right",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222703457",
+      "source": "node-1788962107241",
+      "target": "sop-c-ap-anl",
+      "sourceHandle": "left",
+      "targetHandle": "left",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222707546",
+      "source": "sop-p-postcontratacion",
+      "target": "sop-post-manuales",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222710645",
+      "source": "sop-p-postcontratacion",
+      "target": "sop-post-semiauto",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222715655",
+      "source": "sop-post-manuales",
+      "target": "node-1788964215856",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222717218",
+      "source": "node-1788964215856",
+      "target": "sop-post-m-act",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222718907",
+      "source": "sop-post-m-act",
+      "target": "sop-post-m-sol",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222720392",
+      "source": "sop-post-m-sol",
+      "target": "sop-post-m-def",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222722780",
+      "source": "sop-post-m-def",
+      "target": "node-1788964299110",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222724060",
+      "source": "node-1788964299110",
+      "target": "node-1788964334372",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222726057",
+      "source": "node-1788964334372",
+      "target": "node-1788964384256",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222728321",
+      "source": "node-1788964384256",
+      "target": "node-1788964392586",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222731600",
+      "source": "sop-post-manuales",
+      "target": "node-1788964229440",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222734193",
+      "source": "node-1788964229440",
+      "target": "node-1788964489034",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222735664",
+      "source": "node-1788964229440",
+      "target": "node-1788964501394",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789222769473",
+      "source": "n1-soporte",
+      "target": "sop-procesos",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789316135620",
+      "source": "n1-soporte",
+      "target": "sop-est-datos",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789395857286",
+      "source": "n3-seleccion-riesgo",
+      "target": "node-1789395839521",
+      "sourceHandle": "left",
+      "targetHandle": "right",
+      "type": "data"
+    },
+    {
+      "id": "c-1789455588418",
+      "source": "node-1788961995248",
+      "target": "sop-c-np-prod",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789455875110",
+      "source": "sop-p-postcontratacion",
+      "target": "sop-post-auto",
+      "sourceHandle": "bottom",
+      "targetHandle": "top",
+      "type": "data"
+    },
+    {
+      "id": "c-1789457166502",
+      "source": "node-1789395874735",
+      "target": "n1-soporte",
+      "sourceHandle": "right",
+      "targetHandle": "left",
+      "type": "data"
+    }
+  ]
+}
