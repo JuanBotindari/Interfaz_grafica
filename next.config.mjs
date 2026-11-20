@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const repoName = 'interfaz_grafica';
+const repoName = 'Interfaz_grafica';
 
 // Detecta si estamos en GitHub Actions (para no romper el dev local)
 const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';

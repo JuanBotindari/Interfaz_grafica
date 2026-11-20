@@ -29,6 +29,18 @@ jobs:
       - name: Build with Next.js
         run: npm run build
 
+      # 👇 PASO NUEVO: evita que Jekyll borre la carpeta _next
+      - name: Ensure .nojekyll is present
+        run: touch ./out/.nojekyll
+
+      # 👇 PASO NUEVO (opcional pero muy útil para depurar)
+      - name: List output contents
+        run: |
+          echo "=== Contenido de out/ ==="
+          ls -la ./out
+          echo "=== ¿Existe _next? ==="
+          ls -la ./out/_next || echo "⚠️ _next NO existe"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
